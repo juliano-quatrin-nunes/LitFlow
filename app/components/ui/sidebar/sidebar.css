@@ -1,0 +1,31 @@
+
+@layer components {
+  .sidebar {
+    @apply flex flex-col gap-y-8 overflow-y-auto md:pr-4 text-sm;
+    @apply md:mask-t-from-97% md:mask-t-to-transparent md:mask-b-from-97% md:mask-b-to-transparent;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  .sidebar__section {
+    @apply flex flex-col gap-3;
+  }
+
+  .sidebar__title {
+    @apply flex items-center justify-between gap-2 font-semibold text-foreground;
+  }
+
+  .sidebar__link {
+    @apply block px-3 py-1.5 font-medium text-muted-foreground rounded-btn-md;
+    @apply hover:text-foreground;
+  }
+
+  .sidebar__link-active {
+    @apply font-semibold bg-muted text-foreground;
+  }
+
+  .sidebar__link-disabled {
+    @apply cursor-not-allowed font-normal text-muted-foreground;
+    @apply hover:text-muted-foreground;
+  }
+}

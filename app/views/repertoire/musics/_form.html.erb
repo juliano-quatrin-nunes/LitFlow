@@ -1,0 +1,37 @@
+<%= form_with(model: music, url: music.persisted? ? repertoire_music_path(music) : repertoire_musics_path, class: "contents") do |form| %>
+  <% if music.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+      <h2><%= pluralize(music.errors.count, "error") %> prohibited this music from being saved:</h2>
+
+      <ul>
+        <% music.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :title, class: "block font-medium text-foreground mb-1" %>
+    <%= form.text_field :title, class: "block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :author, class: "block font-medium text-foreground mb-1" %>
+    <%= form.text_field :author, class: "block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :original_key, class: "block font-medium text-foreground mb-1" %>
+    <%= form.text_field :original_key, class: "block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", placeholder: "e.g. E, G, Am" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :content_raw, "Paste Music (Chords over Lyrics)", class: "block font-medium text-foreground mb-1" %>
+    <%= form.text_area :content_raw, rows: 15, class: "block w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", placeholder: "E                  C#m\nVem e eu mostrarei que o meu caminho" %>
+  </div>
+
+  <div class="mt-8">
+    <%= ui.btn form.object.persisted? ? "Update Music" : "Create Music", type: :submit, variant: :primary, block: true %>
+  </div>
+<% end %>

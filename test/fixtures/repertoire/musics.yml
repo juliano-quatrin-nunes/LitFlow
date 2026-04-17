@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: repertoire_musics
+# Database name: primary
+#
+#  id           :bigint           not null, primary key
+#  author       :string
+#  content_json :jsonb
+#  content_raw  :text
+#  original_key :string
+#  title        :string
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+one:
+  title: MyString
+  author: MyString
+  original_key: MyString
+  content_raw: MyText
+  content_json: 
+
+two:
+  title: MyString
+  author: MyString
+  original_key: MyString
+  content_raw: MyText
+  content_json: 

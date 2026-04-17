@@ -1,0 +1,41 @@
+name: Flash
+description: Display toast-style notification messages to users. Automatically displays Rails flash messages with auto-dismiss functionality.
+
+preview: false
+
+usage: |
+  # <% In your layout or view %>
+  <%= ui.flash %>
+
+  # <% In your controller %>
+  flash[:notice] = "Changes saved successfully."
+  flash[:alert] = "Something went wrong."
+
+accepts_html_attributes: true
+
+content: false
+
+props:
+  - name: dismissible
+    type: Boolean
+    default: "true"
+    description: Whether flash messages can be dismissed by clicking the close button. When true, messages auto-dismiss after 5 seconds.
+
+examples:
+  - name: Notice flash
+    preview: false
+    code: |
+      <% flash[:notice] = "This is a notice flash message." %>
+      <%= ui.flash %>
+
+  - name: Alert flash
+    preview: false
+    code: |
+      <% flash[:alert] = "This is an alert flash message." %>
+      <%= ui.flash %>
+
+  - name: Non-dismissible
+    preview: false
+    code: |
+      <% flash[:notice] = "This message cannot be dismissed." %>
+      <%= ui.flash(dismissible: false) %>

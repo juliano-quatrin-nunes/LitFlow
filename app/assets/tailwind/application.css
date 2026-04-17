@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@import "./brand.css";
+@import "./theme.css";
+@import "./animations.css";
+@import "./utilities.css";
+@import "./icons.css";
+
+/* Core UI Components (only those with CSS files) */
+@import "../../components/ui/btn/btn.css";
+@import "../../components/ui/tabs/tabs.css";
+@import "../../components/ui/sidebar/sidebar.css";
+@import "../../components/ui/dropdown/dropdown.css";
+@import "../../components/ui/navbar/navbar.css";
+@import "../../components/ui/drawer/drawer.css";
+@import "../../components/ui/tooltip/tooltip.css";
+@import "../../components/ui/pagy/pagy.css";
+@import "../../components/ui/group/group.css";
+@import "../../components/ui/stepper/stepper.css";
+@import "../../components/ui/spinner/turbo_frame_spinner.css";
+@import "../../components/ui/popover/popover.css";
+@import "../../components/ui/table/table.css";
+@import "../../components/ui/list/component.css";
+@import "../../components/ui/modal/modal.css";
+@import "../../components/ui/timeline/component.css";
+@import "../../components/ui/breadcrumbs/breadcrumbs.css";

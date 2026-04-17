@@ -1,0 +1,93 @@
+@theme {
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --font-serif: ui-serif, georgia, cambria, 'Times New Roman', times, serif;
+
+  --height-navbar: 54px;
+  --width-sidebar: 220px;
+  --background-image-chevron-left: url('/images/icons/chevron-left.svg');
+
+  --spacing-navbar: var(--height-navbar);
+  --spacing-sidebar: var(--width-sidebar);
+
+  --animate-fade-in: fadeIn 0.15s ease-in-out;
+  --animate-slide-down: slideDown 0.3s ease-in-out;
+  --animate-slide-left: slideLeft 0.3s ease-in-out;
+  --animate-slide-up: slideUp 0.3s ease-in-out;
+}
+
+/* Map raw variables to Tailwind utility classes */
+@theme inline {
+  /* Radius — derived from --radius-base and --radius-btn (set in brand.css) */
+  --radius-btn-xs: calc(var(--radius-btn) * 0.75);
+  --radius-btn-sm: calc(var(--radius-btn) * 0.875);
+  --radius-btn-md: var(--radius-btn);
+  --radius-btn-lg: calc(var(--radius-btn) * 1.25);
+  --radius-card: calc(var(--radius-base) * 2);
+  --radius-modal: calc(var(--radius-base) * 3);
+  --radius-dropdown: calc(var(--radius-base) * 1.5);
+  --radius-field: var(--radius-field);
+  --radius-tooltip: calc(var(--radius-base) * 0.5);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-overlay: var(--overlay);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: oklch(from var(--primary) calc(l - 0.06) c h);
+  --color-primary-active: oklch(from var(--primary) calc(l - 0.12) c h);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: oklch(from var(--secondary) calc(l - 0.03) c h);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-hover: oklch(from var(--muted) calc(l - 0.03) c h);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-focus: var(--input-focus);
+  --color-ring: var(--input-ring);
+
+  /* Destructive */
+  --color-destructive: var(--destructive);
+  --color-destructive-hover: oklch(from var(--destructive) calc(l - 0.06) c h);
+  --color-destructive-soft: oklch(from var(--destructive) l c h / 10%);
+  --color-destructive-soft-hover: oklch(from var(--destructive) l c h / 15%);
+  --color-destructive-soft-foreground: var(--destructive);
+  --color-destructive-border: oklch(from var(--destructive) l c h / 25%);
+
+  /* Success */
+  --color-success: var(--success);
+  --color-success-hover: oklch(from var(--success) calc(l - 0.06) c h);
+  --color-success-soft: oklch(from var(--success) l c h / 10%);
+  --color-success-soft-hover: oklch(from var(--success) l c h / 15%);
+  --color-success-soft-foreground: var(--success);
+  --color-success-border: oklch(from var(--success) l c h / 25%);
+
+  /* Warning */
+  --color-warning: var(--warning);
+  --color-warning-hover: oklch(from var(--warning) calc(l - 0.06) c h);
+  --color-warning-soft: oklch(from var(--warning) l c h / 10%);
+  --color-warning-soft-hover: oklch(from var(--warning) l c h / 15%);
+  --color-warning-soft-foreground: var(--warning);
+  --color-warning-border: oklch(from var(--warning) l c h / 25%);
+
+  /* Info */
+  --color-info: var(--info);
+  --color-info-hover: oklch(from var(--info) calc(l - 0.06) c h);
+  --color-info-soft: oklch(from var(--info) l c h / 10%);
+  --color-info-soft-hover: oklch(from var(--info) l c h / 15%);
+  --color-info-soft-foreground: var(--info);
+  --color-info-border: oklch(from var(--info) l c h / 25%);
+}

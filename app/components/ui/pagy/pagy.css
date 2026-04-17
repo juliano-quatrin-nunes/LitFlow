@@ -1,0 +1,60 @@
+
+@layer components {
+  .pagy {
+    @apply inline-flex;
+
+    a:not(.gap) {
+      @apply relative flex items-center justify-center size-8 text-muted-foreground border border-border;
+
+      &:first-child {
+        @apply text-transparent;
+        border-top-left-radius: var(--radius-button);
+        border-bottom-left-radius: var(--radius-button);
+      }
+
+      &:last-child {
+        @apply text-transparent;
+        border-top-right-radius: var(--radius-button);
+        border-bottom-right-radius: var(--radius-button);
+      }
+
+      &:hover {
+        @apply bg-muted;
+      }
+
+      &:not(:last-child) {
+        @apply border-r-0;
+      }
+
+      &:first-child::before, &:last-child::before {
+        @apply absolute size-4 content-[''] text-muted-foreground;
+        background-color: currentColor;
+        mask-image: url('/images/icons/chevron-left.svg');
+        mask-position: center;
+        mask-repeat: no-repeat;
+        mask-size: 100%;
+      }
+
+      &:last-child::before {
+        transform: rotate(180deg);
+      }
+
+      &:not([href]) { /* disabled links */
+        @apply relative inline-flex items-center h-8 px-2 cursor-not-allowed bg-transparent;
+      }
+
+      &.current {
+        @apply relative z-10 flex items-center justify-center cursor-default size-8;
+        @apply bg-primary border-primary text-primary-foreground;
+      }
+    }
+
+    label {
+      @apply inline-block whitespace-nowrap px-3 py-0.5 bg-muted-hover;
+
+      input {
+        @apply bg-muted border border-border;
+      }
+    }
+  }
+}

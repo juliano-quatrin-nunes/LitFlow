@@ -1,0 +1,80 @@
+<div class="mx-auto md:w-2/3 w-full" data-controller="music-view-mode" data-music-view-mode-active-class="bg-blue-600 text-white shadow-inner">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div>
+      <h1 class="font-bold text-4xl text-gray-900"><%= @music.title %></h1>
+      <p class="text-xl text-gray-600 mt-1"><%= @music.author %></p>
+    </div>
+    <div class="flex items-center space-x-2 bg-secondary p-1 rounded-lg">
+      <button data-action="click->music-view-mode#showMusician"
+              data-music-view-mode-target="button"
+              data-mode="musician"
+              class="px-4 py-2 rounded-md font-medium text-sm transition-all duration-200">
+        Musician
+      </button>
+      <button data-action="click->music-view-mode#showProjection"
+              data-music-view-mode-target="button"
+              data-mode="projection"
+              class="px-4 py-2 rounded-md font-medium text-sm transition-all duration-200">
+        Projection
+      </button>
+    </div>
+  </div>
+
+  <%= ui.card class: "overflow-hidden" do %>
+    <!-- Header info -->
+    <div class="px-8 py-4 bg-muted border-b border-border flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Original Key</span>
+        <%= ui.badge @music.original_key, variant: :info, size: :md %>
+      </div>
+      <div class="flex space-x-2">
+        <%= ui.btn "Edit", url: edit_repertoire_music_path(@music), variant: :ghost, size: :sm %>
+      </div>
+    </div>
+
+    <!-- Musician View -->
+    <div data-music-view-mode-target="musician" class="p-8 font-mono text-lg leading-relaxed bg-card text-card-foreground overflow-x-auto">
+      <% @music.content_json.each do |line| %>
+        <div class="mb-2 flex flex-wrap items-end">
+          <% line["parts"].each do |part| %>
+            <div class="inline-flex flex-col">
+              <div class="text-blue-600 font-bold text-sm leading-none h-[1.2em] flex items-end">
+                <%= part["chord"] if part["chord"].present? %>
+              </div>
+              <div class="text-foreground whitespace-pre"><%= part["lyric"].presence || (part["chord"].present? ? " " : "") %></div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Projection View -->
+    <div data-music-view-mode-target="projection" class="hidden p-8 bg-gray-900 text-white text-center min-h-[400px] flex flex-col justify-center">
+      <div class="max-w-2xl mx-auto space-y-6">
+        <% @music.content_json.each do |line| %>
+          <% lyric_line = line["parts"].map { |p| p["lyric"] }.join.strip %>
+          <% if lyric_line.present? %>
+            <p class="text-3xl font-medium leading-tight"><%= lyric_line %></p>
+          <% elsif line["parts"].any? %>
+            <div class="h-6"></div> <!-- Spacer for empty lines -->
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="mt-8 flex justify-between items-center">
+    <%= ui.btn url: repertoire_musics_path, variant: :ghost do %>
+      <span class="icon icon-arrow-left mr-2"></span>
+      Back to Repertoire
+    <% end %>
+
+    <%= button_to repertoire_music_path(@music), method: :delete, class: "text-destructive hover:text-destructive/80 text-sm font-medium", data: { confirm: "Are you sure?" } do %>
+      Delete Music
+    <% end %>
+  </div>
+</div>

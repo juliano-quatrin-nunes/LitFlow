@@ -1,0 +1,34 @@
+
+@layer components {
+  /* Pill variant (default) */
+  .tabs__list {
+    @apply inline-flex gap-1 p-1 text-sm list-none bg-muted rounded-btn-md;
+  }
+
+  .tabs__link {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 font-medium transition-colors;
+    @apply text-muted-foreground rounded-btn-md;
+    @apply hover:text-foreground;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+  }
+
+  .tabs__link-active {
+    @apply shadow-sm text-foreground bg-card;
+    @apply hover:text-foreground;
+  }
+
+  /* Underline variant */
+  .tabs-underline .tabs__list {
+    @apply w-full gap-6 p-0 bg-transparent rounded-none border-b border-border;
+  }
+
+  .tabs-underline .tabs__link {
+    @apply px-0 py-4 rounded-none -mb-px border-b-2 border-transparent;
+    @apply hover:text-foreground hover:border-border;
+  }
+
+  .tabs-underline .tabs__link-active {
+    @apply bg-transparent shadow-none text-primary border-primary;
+    @apply hover:text-primary hover:border-primary;
+  }
+}

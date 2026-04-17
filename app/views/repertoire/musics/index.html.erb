@@ -1,0 +1,35 @@
+<div class="w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="font-bold text-4xl">Musical Repertoire</h1>
+    <%= ui.btn "New Music", url: new_repertoire_music_path %>
+  </div>
+
+  <div id="musics" class="mt-8">
+    <% if @musics.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @musics.each do |music| %>
+          <%= ui.card class: "flex flex-col h-full" do %>
+            <div class="p-6 flex-grow">
+              <h2 class="text-xl font-semibold text-gray-900"><%= music.title %></h2>
+              <p class="text-gray-600 mt-1"><%= music.author %></p>
+            </div>
+
+            <div class="px-6 py-4 bg-muted/50 border-t border-border flex justify-between items-center">
+              <%= ui.badge music.original_key, variant: :info, size: :sm %>
+              <%= ui.btn "Show", url: repertoire_music_path(music), variant: :link, size: :sm %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-12 bg-muted rounded-lg border border-dashed border-border">
+        <p class="text-muted-foreground">No music found in your repertoire.</p>
+        <%= ui.btn "Add your first song", url: new_repertoire_music_path, variant: :link %>
+      </div>
+    <% end %>
+  </div>
+</div>

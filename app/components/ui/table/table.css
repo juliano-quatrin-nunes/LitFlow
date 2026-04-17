@@ -1,0 +1,96 @@
+
+@layer components {
+  .table {
+    @apply w-auto;
+
+    thead {
+      @apply bg-card;
+    }
+
+    th, td {
+      @apply px-3 py-2 text-sm border-b border-border;
+    }
+
+    th {
+      @apply font-semibold text-left text-foreground;
+    }
+
+    tfoot {
+      @apply font-semibold bg-muted;
+    }
+  }
+
+  .table-full {
+    @apply min-w-full;
+  }
+
+  /* Hovered */
+  .table-hovered {
+    tbody tr:hover td,
+    thead tr:hover th {
+      @apply bg-muted;
+    }
+  }
+
+  /* Bordered */
+  .table-bordered {
+    th, td {
+      @apply border border-border;
+    }
+  }
+
+  /* Sticky */
+  .table__th_sticky {
+    @apply sticky z-10 bg-card hover:bg-muted;
+  }
+
+  .table__th_sticky-left {
+    @apply left-0 text-left;
+  }
+
+  .table__th_sticky-right {
+    @apply right-0 text-right;
+  }
+
+  .table__td_sticky {
+    @apply sticky bg-card;
+  }
+
+  .table__td_sticky-left {
+    @apply left-0 text-left;
+  }
+
+  .table__td_sticky-right {
+    @apply right-0 text-right;
+  }
+
+  /* Sizes */
+  .table-xs {
+    th, td {
+      @apply px-2 py-2 text-xs;
+    }
+  }
+
+  .table-sm {
+    th, td {
+      @apply px-3 py-2 text-sm;
+    }
+  }
+
+  .table-md {
+    th, td {
+      @apply px-3 py-2.5 text-sm;
+    }
+  }
+
+  .table-lg {
+    th, td {
+      @apply px-4 py-4 text-base;
+    }
+  }
+
+  /* Actions */
+  .table__actions {
+    @apply w-0 text-right;
+  }
+}

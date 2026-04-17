@@ -1,0 +1,14 @@
+
+@layer components {
+  .breadcrumbs {
+    @apply flex text-sm text-muted-foreground;
+
+    .current {
+      @apply text-foreground;
+    }
+  }
+
+  .breadcrumbs__separator {
+    @apply mx-2;
+  }
+}
