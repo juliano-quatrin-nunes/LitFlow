@@ -11,6 +11,6 @@ class Repertoire::MusicIntegrationTest < ActiveSupport::TestCase
 
     assert_equal "[E]Vem e eu mostrarei [C#m]que o meu caminho", music.content_raw
     assert_not_nil music.content_json
-    assert_equal "E", music.content_json.first["parts"].first["chord"]
+    assert_equal "E", music.content_json.first["lines"].first["parts"].first["chord"]
   end
 end

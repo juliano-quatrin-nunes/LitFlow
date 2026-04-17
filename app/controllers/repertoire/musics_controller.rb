@@ -20,7 +20,7 @@ module Repertoire
       @music = Music.new(music_params)
 
       if @music.save
-        redirect_to repertoire_music_path(@music), notice: "Music was successfully created."
+        redirect_to repertoire_music_path(@music), notice: "Música criada com sucesso."
       else
         render :new, status: :unprocessable_entity
       end
@@ -28,7 +28,7 @@ module Repertoire
 
     def update
       if @music.update(music_params)
-        redirect_to repertoire_music_path(@music), notice: "Music was successfully updated."
+        redirect_to repertoire_music_path(@music), notice: "Música atualizada com sucesso."
       else
         render :edit, status: :unprocessable_entity
       end
@@ -36,7 +36,7 @@ module Repertoire
 
     def destroy
       @music.destroy
-      redirect_to repertoire_musics_path, notice: "Music was successfully destroyed."
+      redirect_to repertoire_musics_path, notice: "Música excluída com sucesso."
     end
 
     private
