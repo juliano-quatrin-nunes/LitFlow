@@ -15,9 +15,10 @@ module Repertoire
     end
 
     def call
-      raw = parse_to_chordpro(@text)
-      json = generate_json(raw)
-      { raw: raw, json: json }
+      raw_chordpro = parse_to_chordpro(@text)
+      json = generate_json(raw_chordpro)
+      human_raw = generate_plain_text(json)
+      { raw: human_raw, json: json }
     end
 
     private
@@ -55,13 +56,10 @@ module Repertoire
 
     def is_label?(line)
       text = line.strip
-      # A label must be either [Label Content] or Label Content:
-      # and it must NOT be a line that looks like it has multiple chords in brackets
       if text.match?(/^\[[^\]]+\]$/)
         label_content = text.match(/^\[(.+)\]$/)[1]
         !is_pure_chord?(label_content)
       elsif text.match?(/^[^:]+:$/)
-        # Avoid matching lines that are just chords with a colon (rare but possible)
         label_content = text.match(/^(.+):$/)[1]
         !is_pure_chord?(label_content)
       else
@@ -145,7 +143,7 @@ module Repertoire
           label_text = line.strip.match(LABEL_REGEX).captures.compact.first
           sections << { type: "label", lines: [ { parts: [ { lyric: label_text } ] } ] }
           pending_type = infer_type_from_label(label_text)
-          current_section = nil # Ensure next content line starts a new section
+          current_section = nil
           next
         end
 
@@ -158,13 +156,43 @@ module Repertoire
         current_section[:lines] << { parts: parse_line_to_fragments(line) }
       end
 
-      # Post-process sections: refine 'unknown' types and remove empty ones
       sections.each do |s|
         next unless s[:type] == "unknown"
         s[:type] = infer_type_from_content(s)
       end
 
       sections.reject { |s| s[:lines].empty? }
+    end
+
+    def generate_plain_text(json)
+      result = []
+
+      json.each do |section|
+        if section[:type] == "label"
+          result << "[#{section[:lines].first[:parts].first[:lyric]}]"
+        else
+          section[:lines].each do |line|
+            chord_line = ""
+            lyric_line = ""
+
+            line[:parts].each do |part|
+              chord = part[:chord] || ""
+              lyric = part[:lyric] || ""
+              chord_padded = chord.present? ? "#{chord} " : ""
+              max_len = [ chord_padded.length, lyric.length ].max
+
+              chord_line += chord_padded.ljust(max_len, " ")
+              lyric_line += lyric.ljust(max_len, " ")
+            end
+
+            result << chord_line.rstrip if chord_line.strip.present?
+            result << lyric_line.rstrip if lyric_line.strip.present?
+          end
+        end
+        result << ""
+      end
+
+      result.join("\n").strip
     end
 
     def infer_type_from_label(label)
@@ -183,16 +211,13 @@ module Repertoire
     end
 
     def infer_type_from_content(section)
-      # Check if any line has real lyrics (not just chords, spaces, or notation symbols)
       has_real_lyrics = section[:lines].any? do |l|
         l[:parts].any? do |p|
-          # Remove common notation symbols and check for alphanumeric content
           p[:lyric].gsub(/[()\[\]\s\-_]/, "").present?
         end
       end
       has_real_lyrics ? "verse" : "intro"
     end
-
 
     def parse_line_to_fragments(line)
       fragments = []

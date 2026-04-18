@@ -9,7 +9,8 @@ class Repertoire::MusicIntegrationTest < ActiveSupport::TestCase
 
     music.save!
 
-    assert_equal "[E]Vem e eu mostrarei [C#m]que o meu caminho", music.content_raw
+    expected_raw = "E                  C#m\nVem e eu mostrarei que o meu caminho"
+    assert_equal expected_raw, music.content_raw
     assert_not_nil music.content_json
     assert_equal "E", music.content_json.first["lines"].first["parts"].first["chord"]
   end

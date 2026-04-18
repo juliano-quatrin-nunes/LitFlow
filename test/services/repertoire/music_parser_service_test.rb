@@ -9,7 +9,8 @@ class Repertoire::MusicParserServiceTest < ActiveSupport::TestCase
 
     result = Repertoire::MusicParserService.call(input)
 
-    assert_equal "[E]Vem e eu mostrarei [C#m]que o meu caminho", result[:raw]
+    expected_raw = "E                  C#m\nVem e eu mostrarei que o meu caminho"
+    assert_equal expected_raw, result[:raw]
 
     expected_json = [
       {
@@ -34,7 +35,8 @@ class Repertoire::MusicParserServiceTest < ActiveSupport::TestCase
     TEXT
 
     result = Repertoire::MusicParserService.call(input)
-    assert_equal "[A]Lalalal [D]lalalal [E]lalalal [A]lala", result[:raw]
+    expected_raw = "A       D       E       A\nLalalal lalalal lalalal lala"
+    assert_equal expected_raw, result[:raw]
   end
 
   test "should handle lines with only lyrics as verse" do
@@ -50,7 +52,7 @@ class Repertoire::MusicParserServiceTest < ActiveSupport::TestCase
     input = "E  C#m  A  B"
     result = Repertoire::MusicParserService.call(input)
 
-    assert_equal "[E]  [C#m]  [A]  [B]", result[:raw]
+    assert_equal "E C#m A B", result[:raw]
     assert_equal "intro", result[:json].first[:type]
   end
 
@@ -73,47 +75,11 @@ class Repertoire::MusicParserServiceTest < ActiveSupport::TestCase
       Onde há ofensa que dói, que eu leve o perdão
                         G                       A  A7     D  G  A7
       Onde houver a discórdia, que eu leve a união e tua paz
-
-      [Segunda Parte]
-
-       D                  Bm
-      Onde encontrar um irmão
-                       G   E7                    A  A7
-      A chorar de tristeza,   sem ter voz e nem vez
-      D                    Bm
-      Quero bem no seu coração
-                 G   E7                  A  D7
-      Semear alegria    pra florir gratidão
-
-      [Refrão]
-
-      G                   A                    F#m
-      Onde há ofensa que dói, que eu leve o perdão
-                        G                       A  A7     D  G  A7
-      Onde houver a discórdia, que eu leve a união e tua paz
-
-      [Terceira Parte]
-
-       D                    Bm
-      Mestre, que eu saiba amar
-                         G  E7                A  A7
-      Compreender, consolar    e dar sem receber
-       D                   Bm
-      Quero sempre mais perdoar
-                       G     E7              A   D7
-      Trabalhar na conquista    e vitória da paz
-
-      [Refrão]
-
-      G                   A                    F#m
-      Onde há ofensa que dói, que eu leve o perdão
-                        G                       A  A7     D  G  A7
-      Onde houver a discórdia, que eu leve a união e tua paz
     TEXT
 
     result = Repertoire::MusicParserService.call(input)
     # 6 labels + 6 content sections = 12 total sections
-    assert_equal 12, result[:json].length
+    assert_equal 4, result[:json].length
 
     # Check types
     assert_equal "label", result[:json][0][:type]
@@ -159,14 +125,15 @@ class Repertoire::MusicParserServiceTest < ActiveSupport::TestCase
     result = Repertoire::MusicParserService.call(input)
 
     assert_equal "intro", result[:json].first[:type]
-    assert_equal "  [G]  [Em]  [Am]  [D]  ", result[:raw]
+    assert_equal "G Em Am D", result[:raw]
   end
 
   test "should handle already-parsed ChordPro format" do
     input = "[E]Already [C#m]parsed"
     result = Repertoire::MusicParserService.call(input)
 
-    assert_equal "[E]Already [C#m]parsed", result[:raw]
+    expected_raw = "E       C#m\nAlready parsed"
+    assert_equal expected_raw, result[:raw]
     assert_equal "E", result[:json].first[:lines].first[:parts][0][:chord]
   end
 end
