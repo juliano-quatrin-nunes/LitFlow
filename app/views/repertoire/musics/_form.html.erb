@@ -1,7 +1,7 @@
-<%= form_with(model: music, url: music.persisted? ? repertoire_music_path(music) : repertoire_musics_path, class: "contents") do |form| %>
+<%= form_with(model: music, url: music.persisted? ? repertoire_music_by_author_update_path(music.author, music) : repertoire_musics_path, class: "form") do |form| %>
   <% if music.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
-      <h2><%= pluralize(music.errors.count, "error") %> prohibited this music from being saved:</h2>
+      <h2><%= pluralize(music.errors.count, "error") %> proibiram esta música de ser salva:</h2>
 
       <ul>
         <% music.errors.each do |error| %>
@@ -11,25 +11,31 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :title, "Título", class: "block font-medium text-foreground mb-1" %>
-    <%= form.text_field :title, class: "block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" %>
-  </div>
+  <%= form.text_field :title, 
+        label: "Título", 
+        placeholder: "Título da música",
+        required: true %>
 
-  <div class="my-5">
-    <%= form.label :author, "Autor", class: "block font-medium text-foreground mb-1" %>
-    <%= form.text_field :author, class: "block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" %>
-  </div>
+  <%= form.choices :author_id, 
+        (music.author ? [[music.author.name, music.author.id]] : []), 
+        { label: "Autor", include_blank: "Selecione ou crie um autor..." }, 
+        { 
+          data: { 
+            search: repertoire_authors_path(format: :json),
+            new: repertoire_authors_path
+          } 
+        } 
+  %>
 
-  <div class="my-5">
-    <%= form.label :original_key, "Tom Original", class: "block font-medium text-foreground mb-1" %>
-    <%= form.text_field :original_key, class: "block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", placeholder: "ex: E, G, Am" %>
-  </div>
+  <%= form.text_field :original_key, 
+        label: "Tom Original", 
+        placeholder: "ex: E, G, Am" %>
 
-  <div class="my-5">
-    <%= form.label :content_raw, "Cole a Música (Cifras sobre a Letra)", class: "block font-medium text-foreground mb-1" %>
-    <%= form.text_area :content_raw, rows: 15, class: "block w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", placeholder: "E                  C#m\nVem e eu mostrarei que o meu caminho" %>
-  </div>
+  <%= form.text_area :content_raw, 
+        label: "Cole a Música (Cifras sobre a Letra)", 
+        rows: 15, 
+        placeholder: "E                  C#m\nVem e eu mostrarei que o meu caminho",
+        class: "font-mono" %>
 
   <div class="mt-8">
     <%= ui.btn form.object.persisted? ? "Atualizar Música" : "Criar Música", type: :submit, variant: :primary, block: true %>

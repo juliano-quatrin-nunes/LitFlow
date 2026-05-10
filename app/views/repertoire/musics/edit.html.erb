@@ -9,6 +9,6 @@
 
   <div class="mt-8 flex justify-between items-center">
     <%= ui.btn "Voltar ao repertório", url: repertoire_musics_path, variant: :ghost %>
-    <%= ui.btn "Ver esta música", url: repertoire_music_path(@music), variant: :secondary %>
+    <%= ui.btn "Ver esta música", url: repertoire_music_by_author_show_path(@music.author, @music), variant: :secondary %>
   </div>
 </div>

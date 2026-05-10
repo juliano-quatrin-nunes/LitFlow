@@ -7,6 +7,12 @@ module Repertoire
     end
 
     def show
+      @current_key = params[:key] || @music.original_key
+      @content_json = if @current_key != @music.original_key
+        Repertoire::TranspositionService.call(@music.content_json, @music.original_key, @current_key)
+      else
+        @music.content_json
+      end
     end
 
     def new
@@ -20,7 +26,7 @@ module Repertoire
       @music = Music.new(music_params)
 
       if @music.save
-        redirect_to repertoire_music_path(@music), notice: "Música criada com sucesso."
+        redirect_to repertoire_music_by_author_show_path(@music.author, @music), notice: "Música criada com sucesso."
       else
         render :new, status: :unprocessable_entity
       end
@@ -28,7 +34,7 @@ module Repertoire
 
     def update
       if @music.update(music_params)
-        redirect_to repertoire_music_path(@music), notice: "Música atualizada com sucesso."
+        redirect_to repertoire_music_by_author_show_path(@music.author, @music), notice: "Música atualizada com sucesso."
       else
         render :edit, status: :unprocessable_entity
       end
@@ -42,11 +48,12 @@ module Repertoire
     private
 
     def set_music
-      @music = Music.find(params[:id])
+      author = Author.find_by!(slug: params[:author_slug])
+      @music = author.musics.find_by!(slug: params[:id])
     end
 
     def music_params
-      params.expect(repertoire_music: [ :title, :author, :original_key, :content_raw ])
+      params.expect(repertoire_music: [ :title, :author_name, :original_key, :content_raw ])
     end
   end
 end

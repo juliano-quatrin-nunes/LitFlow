@@ -1,13 +1,23 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <div class="mb-8">
-    <h1 class="font-bold text-4xl">Nova Música</h1>
-  </div>
+<div class="w-full max-w-4xl mx-auto">
+  <%= ui.header class: "mb-8" do %>
+    <div class="flex flex-col gap-1">
+      <%= ui.breadcrumbs do %>
+        <%= ui.breadcrumb "Biblioteca", url: repertoire_musics_path %>
+        <%= ui.breadcrumb "Músicas", url: repertoire_musics_path %>
+        <%= ui.breadcrumb "Nova Música" %>
+      <% end %>
+      <h1 class="font-bold text-3xl tracking-tight text-foreground mt-2">Nova Música</h1>
+    </div>
+  <% end %>
 
-  <%= ui.card class: "p-8" do %>
+  <%= ui.card class: "p-6 md:p-10 shadow-sm" do %>
     <%= render "form", music: @music %>
   <% end %>
 
-  <div class="mt-8">
-    <%= ui.btn "Voltar ao repertório", url: repertoire_musics_path, variant: :ghost %>
+  <div class="mt-8 flex justify-center">
+    <%= ui.btn url: repertoire_musics_path, variant: :ghost, size: :sm do %>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left mr-2 opacity-70"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      Voltar ao Repertório
+    <% end %>
   </div>
 </div>

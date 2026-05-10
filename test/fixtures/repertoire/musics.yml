@@ -1,29 +1,37 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 # == Schema Information
 #
 # Table name: repertoire_musics
 # Database name: primary
 #
 #  id           :bigint           not null, primary key
-#  author       :string
 #  content_json :jsonb
 #  content_raw  :text
 #  original_key :string
+#  slug         :string
 #  title        :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  author_id    :bigint           not null
+#
+# Indexes
+#
+#  index_repertoire_musics_on_author_id  (author_id)
+#  index_repertoire_musics_on_slug       (slug) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (author_id => repertoire_authors.id)
 #
 one:
-  title: MyString
-  author: MyString
-  original_key: MyString
-  content_raw: MyText
-  content_json: 
+  title: Vem Espírito Santo
+  author: padre_jonas
+  original_key: E
+  content_raw: "[E]Vem [A]Espírito"
+  slug: vem-espirito-santo
 
 two:
-  title: MyString
-  author: MyString
-  original_key: MyString
-  content_raw: MyText
-  content_json: 
+  title: Outra Música
+  author: unknown_author
+  original_key: G
+  content_raw: "[G]Lala [D]lala"
+  slug: outra-musica

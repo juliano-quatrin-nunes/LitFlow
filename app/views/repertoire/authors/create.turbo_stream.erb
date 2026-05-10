@@ -1,0 +1,1 @@
+<turbo-stream action="dispatch_event" target="<%= params[:target] || "repertoire_music_author_id" %>" name="addAndSelect" detail='<%= { value: @author.id, label: @author.name }.to_json %>'></turbo-stream>

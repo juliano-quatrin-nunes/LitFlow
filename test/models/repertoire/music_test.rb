@@ -4,13 +4,23 @@
 # Database name: primary
 #
 #  id           :bigint           not null, primary key
-#  author       :string
 #  content_json :jsonb
 #  content_raw  :text
 #  original_key :string
+#  slug         :string
 #  title        :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  author_id    :bigint           not null
+#
+# Indexes
+#
+#  index_repertoire_musics_on_author_id  (author_id)
+#  index_repertoire_musics_on_slug       (slug) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (author_id => repertoire_authors.id)
 #
 require "test_helper"
 

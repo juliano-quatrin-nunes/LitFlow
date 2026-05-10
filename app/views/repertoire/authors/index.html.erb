@@ -1,0 +1,58 @@
+<div class="w-full">
+  <%= ui.header class: "mb-8" do %>
+    <div class="flex flex-col gap-1">
+      <%= ui.breadcrumbs do %>
+        <%= ui.breadcrumb "Biblioteca", url: repertoire_musics_path %>
+        <%= ui.breadcrumb "Autores" %>
+      <% end %>
+      <h1 class="font-bold text-3xl tracking-tight text-foreground mt-2">Autores</h1>
+    </div>
+  <% end %>
+
+  <div id="authors">
+    <% if @authors.any? %>
+      <%= ui.card class: "overflow-hidden shadow-sm" do %>
+        <%= ui.table hovered: true do %>
+          <%= ui.table_thead do %>
+            <%= ui.table_tr do %>
+              <%= ui.table_th "Nome" %>
+              <%= ui.table_th "Músicas", class: "text-center w-32" %>
+              <%= ui.table_th "Ações", class: "text-right" %>
+            <% end %>
+          <% end %>
+          <%= ui.table_tbody do %>
+            <% @authors.each do |author| %>
+              <%= ui.table_tr do %>
+                <%= ui.table_td class: "font-medium" do %>
+                  <%= author.name %>
+                <% end %>
+                <%= ui.table_td class: "text-center" do %>
+                  <%= ui.badge author.musics.count, variant: :default, size: :xs %>
+                <% end %>
+                <%= ui.table_td(actions: true) do %>
+                  <div class="flex justify-end">
+                    <%= ui.btn "Ver Músicas", 
+                              url: repertoire_musics_path(q: author.name), 
+                              variant: :ghost, 
+                              size: :sm %>
+                  </div>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% else %>
+      <%= ui.card class: "bg-muted/30 border-dashed" do %>
+        <%= ui.empty do %>
+          <div class="bg-muted p-4 rounded-full mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users text-muted-foreground"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="19" cy="4" r="3"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Nenhum autor encontrado</h3>
+          <p class="text-muted-foreground mb-6 max-w-sm">Os autores são criados automaticamente quando você adiciona novas músicas.</p>
+          <%= ui.btn "Adicionar Música", url: new_repertoire_music_path %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

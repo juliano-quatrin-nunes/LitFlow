@@ -75,3 +75,4 @@ group :test do
 end
 
 gem "tailwind_merge", "~> 1.4"
+gem "data_migrate"

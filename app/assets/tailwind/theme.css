@@ -32,6 +32,8 @@
   --color-foreground: var(--foreground);
   --color-overlay: var(--overlay);
 
+  --color-sidebar: var(--sidebar);
+
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
 

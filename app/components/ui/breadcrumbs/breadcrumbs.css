@@ -1,14 +1,19 @@
-
 @layer components {
   .breadcrumbs {
-    @apply flex text-sm text-muted-foreground;
-
-    .current {
-      @apply text-foreground;
-    }
+    @apply flex items-center text-sm text-muted-foreground;
   }
 
-  .breadcrumbs__separator {
-    @apply mx-2;
+  .breadcrumbs__item {
+    @apply hover:text-foreground transition-colors;
+  }
+
+  .breadcrumbs__item--active {
+    @apply text-foreground font-medium pointer-events-none;
+  }
+
+  /* Add separator between items */
+  .breadcrumbs__item:not(:last-child):after {
+    content: "/";
+    @apply mx-2 text-muted-foreground/50 font-normal;
   }
 }

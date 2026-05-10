@@ -1,35 +1,56 @@
 <div class="w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+  <%= ui.header class: "mb-8" do %>
+    <div class="flex flex-col gap-1">
+      <%= ui.breadcrumbs do %>
+        <%= ui.breadcrumb "Biblioteca", url: repertoire_musics_path %>
+        <%= ui.breadcrumb "Músicas" %>
+      <% end %>
+      <h1 class="font-bold text-3xl tracking-tight text-foreground mt-2">Repertório Musical</h1>
+    </div>
+
+    <%= ui.btn url: new_repertoire_music_path, class: "gap-2" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      Nova Música
+    <% end %>
   <% end %>
 
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="font-bold text-4xl">Repertório Musical</h1>
-    <%= ui.btn "Nova Música", url: new_repertoire_music_path %>
-  </div>
-
-  <div id="musics" class="mt-8">
+  <div id="musics">
     <% if @musics.any? %>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <% @musics.each do |music| %>
-          <%= ui.card class: "flex flex-col h-full" do %>
+          <%= ui.card class: "group flex flex-col h-full hover:border-primary/50 transition-colors shadow-sm" do %>
             <div class="p-6 flex-grow">
-              <h2 class="text-xl font-semibold text-gray-900"><%= music.title %></h2>
-              <p class="text-gray-600 mt-1"><%= music.author %></p>
+              <div class="flex justify-between items-start gap-2 mb-1">
+                <h2 class="text-xl font-bold text-foreground leading-tight"><%= music.title %></h2>
+              </div>
+              <p class="text-muted-foreground flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user opacity-50"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <%= music.author_name %>
+              </p>
             </div>
 
-            <div class="px-6 py-4 bg-muted/50 border-t border-border flex justify-between items-center">
-              <%= ui.badge music.original_key, variant: :info, size: :sm %>
-              <%= ui.btn "Ver", url: repertoire_music_path(music), variant: :link, size: :sm %>
+            <div class="px-6 py-4 bg-muted/30 border-t border-border flex justify-between items-center">
+              <%= ui.badge music.original_key, variant: :info, size: :xs %>
+              <%= ui.btn "Ver Cifra", 
+                        url: repertoire_music_by_author_show_path(music.author, music), 
+                        variant: :link, 
+                        size: :sm,
+                        class: "h-auto p-0 font-semibold" %>
             </div>
           <% end %>
         <% end %>
       </div>
     <% else %>
-      <div class="text-center py-12 bg-muted rounded-lg border border-dashed border-border">
-        <p class="text-muted-foreground">Nenhuma música encontrada no seu repertório.</p>
-        <%= ui.btn "Adicione sua primeira música", url: new_repertoire_music_path, variant: :link %>
-      </div>
+      <%= ui.card class: "bg-muted/30 border-dashed" do %>
+        <%= ui.empty do %>
+          <div class="bg-muted p-4 rounded-full mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music text-muted-foreground"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Seu repertório está vazio</h3>
+          <p class="text-muted-foreground mb-6 max-w-sm">Adicione suas primeiras músicas para começar a organizar sua liturgia.</p>
+          <%= ui.btn "Adicionar minha primeira música", url: new_repertoire_music_path %>
+        <% end %>
+      <% end %>
     <% end %>
   </div>
 </div>

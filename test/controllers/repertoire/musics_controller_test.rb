@@ -7,8 +7,17 @@ class Repertoire::MusicsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should show music" do
-    music = Repertoire::Music.create!(title: "Test Music", content_raw: "E\nTest")
-    get repertoire_music_url(music)
+    music = repertoire_musics(:one)
+    get repertoire_music_by_author_url(music.author, music)
     assert_response :success
+    assert_select "div.text-blue-600", text: "E"
+  end
+
+  test "should show transposed music" do
+    music = repertoire_musics(:one)
+    get repertoire_music_by_author_url(music.author, music, key: "G")
+    assert_response :success
+    assert_select "div.text-blue-600", text: "G"
+    assert_select "span", text: "G" # The badge
   end
 end

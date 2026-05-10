@@ -13,6 +13,7 @@ export default class ChoicesController extends Controller {
     this.#setup()
     document.addEventListener('turbo:morph', this.reload.bind(this))
     this.selectTarget.addEventListener('enable', this.enable.bind(this))
+    this.selectTarget.addEventListener('addAndSelect', this.addAndSelect.bind(this))
   }
 
   disconnect () {
@@ -22,6 +23,7 @@ export default class ChoicesController extends Controller {
       document.removeEventListener('turbo:morph', this.reload.bind(this))
 
       this.selectTarget.removeEventListener('enable', this.enable.bind(this))
+      this.selectTarget.removeEventListener('addAndSelect', this.addAndSelect.bind(this))
       if (this.input && this.searchPath) {
         this.input.removeEventListener('input', this.#search)
       }
@@ -49,6 +51,34 @@ export default class ChoicesController extends Controller {
         new CustomEvent('change', {
           bubbles: true,
           detail: { value }
+        })
+      )
+    }
+  }
+
+  addAndSelect (event) {
+    const { value, label } = event.detail
+    const stringValue = value.toString()
+    
+    if (this.choices) {
+      // Clear search input visually
+      if (this.input) {
+        this.input.value = ''
+      }
+
+      // Add the choice to the internal store if not present, and select it
+      // replace: false appends to the current list
+      this.choices.setChoices([{ value: stringValue, label: label, selected: true }], 'value', 'label', false)
+      
+      // Explicitly set the choice by value to ensure the single-select display updates
+      this.choices.setChoiceByValue(stringValue)
+      
+      this.choices.hideDropdown()
+
+      this.selectTarget.dispatchEvent(
+        new CustomEvent('change', {
+          bubbles: true,
+          detail: { value: stringValue }
         })
       )
     }
@@ -104,6 +134,9 @@ export default class ChoicesController extends Controller {
     }
 
     this.#appendNewLink()
+    if (this.searchPath) {
+      this.#fetchChoices('')
+    }
   }
 
   #addItem = (event) => {
@@ -124,12 +157,44 @@ export default class ChoicesController extends Controller {
   }
 
   #search = (event) => {
-    if (event.target.value) {
-      fetch(this.#buildSearchPath(this.searchPath, `q=${event.target.value}`), {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    const query = event.target.value
+    this.#fetchChoices(query)
+  }
+
+  #fetchChoices = (query = '') => {
+    fetch(this.#buildSearchPath(this.searchPath, `q=${query}`), {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+      .then(response => response.json())
+      .then(data => {
+        this.choices.setChoices(data, 'value', 'label', true)
+        this.#updateNewLink(query, data)
       })
-        .then(response => response.json())
-        .then(this.#setSearchOptions)
+  }
+
+  #updateNewLink (query = '', currentOptions = []) {
+    if (!this.newPath) return
+
+    const newLink = this.element.querySelector('.choices-new-link')
+    if (!newLink) return
+
+    const span = newLink.querySelector('span')
+    const exists = currentOptions.some(c => c.label.toLowerCase().trim() === query.toLowerCase().trim())
+
+    if (query && !exists) {
+      span.textContent = `Criar "${query}"`
+      newLink.href = this.#buildSearchPath(this.newPath, `author[name]=${encodeURIComponent(query)}`)
+      newLink.dataset.turboMethod = 'post'
+      delete newLink.dataset.turboFrame
+      newLink.classList.remove('hidden')
+    } else if (!query) {
+      span.textContent = 'Criar novo'
+      newLink.href = this.newPath
+      newLink.dataset.turboFrame = 'drawer'
+      delete newLink.dataset.turboMethod
+      newLink.classList.add('hidden')
+    } else {
+      newLink.classList.add('hidden')
     }
   }
 
@@ -172,12 +237,12 @@ export default class ChoicesController extends Controller {
 
   #dropdownFooterTemplate () {
     return `
-      <a href="${this.newPath}" data-turbo-frame="drawer" class="choices__item choices__item--choice flex items-center gap-2 hover:bg-accent" tabindex="-1">
+      <a href="${this.newPath}" data-turbo-frame="drawer" class="choices-new-link hidden choices__item choices__item--choice flex items-center gap-2 hover:bg-accent" tabindex="-1">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M2.8125 9H15.1875" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M9 2.8125V15.1875" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span>New</span>
+        <span>Criar novo</span>
       </a>
     `
   }

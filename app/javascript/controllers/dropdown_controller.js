@@ -7,24 +7,28 @@ export default class DropdownController extends Controller {
   static values = { open: { type: Boolean, default: false } }
 
   connect () {
+    console.log("Dropdown connected", this.element)
     useClickOutside(this, { element: this.element })
     this.element.addEventListener('click', this.#handleClick)
     document.addEventListener('turbo:morph', this.#handleMorph)
   }
 
   disconnect () {
+    console.log("Dropdown disconnected")
     this.element.removeEventListener('click', this.#handleClick)
     document.removeEventListener('keydown', this.#handleKeydown)
     document.removeEventListener('turbo:morph', this.#handleMorph)
   }
 
   #handleClick = (event) => {
+    console.log("Dropdown clicked", event.target)
     if (!this.menuTarget.contains(event.target)) {
       this.toggle()
     }
   }
 
   toggle () {
+    console.log("Dropdown toggle. Current open value:", this.openValue)
     this.openValue = !this.openValue
   }
 

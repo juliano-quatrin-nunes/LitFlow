@@ -1,6 +1,15 @@
 Rails.application.routes.draw do
   namespace :repertoire do
-    resources :musics
+    resources :authors, only: [ :index, :create ]
+    resources :musics, only: [ :index, :new, :create ]
+
+    scope "musics/:author_slug", as: :music_by_author do
+      get ":id", to: "musics#show", as: :show
+      get ":id/edit", to: "musics#edit", as: :edit
+      patch ":id", to: "musics#update", as: :update
+      put ":id", to: "musics#update"
+      delete ":id", to: "musics#destroy", as: :destroy
+    end
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -14,5 +23,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  root "repertoire/musics#index"
 end

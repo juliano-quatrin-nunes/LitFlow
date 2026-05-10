@@ -1,28 +1,33 @@
 class Ui::Breadcrumbs::Component < ApplicationComponent
-  DEFAULT_SEPARATOR = "/"
-
-  def initialize(separator: DEFAULT_SEPARATOR, display_single_fragment: true, **options)
+  def initialize(separator: "/", **options)
     @separator = separator
-    @display_single_fragment = display_single_fragment
     @options = options
   end
 
   def call
-    helpers.breadcrumbs(
-      separator: separator_content,
-      class: classes,
-      display_single_fragment: @display_single_fragment,
-      **@options.except(:class)
-    )
+    content_tag :nav, class: classes, aria: { label: "Breadcrumb" }, **@options.except(:class) do
+      # Render children and interleave with separators
+      items = content.to_s.scan(/<span.*?<\/span>|<a.*?<\/a>/m).reject(&:blank?)
+      
+      safe_join(items.each_with_index.map do |item, index|
+        if index < items.size - 1
+          safe_join([
+            item.html_safe,
+            content_tag(:span, @separator, class: "mx-2 text-muted-foreground/50 font-normal")
+          ])
+        else
+          item.html_safe
+        end
+      end)
+    end
   end
 
   private
 
-  def separator_content
-    content_tag(:span, @separator, class: "breadcrumbs__separator")
-  end
-
   def classes
-    class_names("breadcrumbs", @options[:class])
+    class_names(
+      "breadcrumbs flex items-center flex-wrap",
+      @options[:class]
+    )
   end
 end

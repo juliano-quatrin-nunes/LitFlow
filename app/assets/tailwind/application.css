@@ -5,6 +5,8 @@
 @import "./animations.css";
 @import "./utilities.css";
 @import "./icons.css";
+@import "../stylesheets/form.css";
+@import "../stylesheets/choices.css";
 
 /* Core UI Components (only those with CSS files) */
 @import "../../components/ui/btn/btn.css";
