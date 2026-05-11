@@ -26,12 +26,24 @@ require "test_helper"
 
 class Repertoire::MusicTest < ActiveSupport::TestCase
   test "should not save music without title" do
-    music = Repertoire::Music.new(author: "Test Author")
+    music = Repertoire::Music.new(author: repertoire_authors(:padre_jonas))
     assert_not music.save, "Saved the music without a title"
   end
 
   test "should save music with valid attributes" do
-    music = Repertoire::Music.new(title: "Test Song", author: "Test Author", original_key: "E")
+    music = Repertoire::Music.new(title: "Test Song", author: repertoire_authors(:padre_jonas), original_key: "E")
     assert music.save
+  end
+
+  test "can associate with liturgical seasons and mass parts" do
+    music = repertoire_musics(:one)
+    season = repertoire_liturgical_seasons(:one)
+    part = repertoire_mass_parts(:one)
+
+    music.liturgical_seasons << season
+    music.mass_parts << part
+
+    assert_includes music.liturgical_seasons, season
+    assert_includes music.mass_parts, part
   end
 end

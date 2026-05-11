@@ -3,7 +3,26 @@ module Repertoire
     before_action :set_music, only: %i[show edit update destroy]
 
     def index
-      @musics = Music.all
+      @musics = Music.all.joins(:author)
+      @seasons = LiturgicalSeason.order(:name)
+      @parts = MassPart.order(:position)
+
+      if params[:q].present?
+        query = "%#{params[:q]}%"
+        @musics = @musics.where(
+          "repertoire_musics.title ILIKE ? OR repertoire_authors.name ILIKE ? OR repertoire_musics.content_raw ILIKE ?",
+          query, query, query
+        )
+      end
+
+      if params[:season].present?
+        season_slugs = [ params[:season], "geral" ]
+        @musics = @musics.joins(:liturgical_seasons).where(repertoire_liturgical_seasons: { slug: season_slugs }).distinct
+      end
+
+      if params[:part].present?
+        @musics = @musics.joins(:mass_parts).where(repertoire_mass_parts: { slug: params[:part] })
+      end
     end
 
     def show

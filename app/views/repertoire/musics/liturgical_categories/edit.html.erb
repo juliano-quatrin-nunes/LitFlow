@@ -1,0 +1,36 @@
+<%= ui.modal "Editar Categorias" do %>
+  <%= form_with model: @music, url: repertoire_music_by_author_liturgical_categories_path(@music.author, @music), method: :patch, data: { turbo: true } do |f| %>
+    <%= ui.modal_body do %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Partes da Missa</h3>
+          <div class="flex flex-col gap-3">
+            <%= f.collection_check_boxes :mass_part_ids, Repertoire::MassPart.order(:position), :id, :name do |b| %>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <%= b.check_box class: "w-4 h-4 text-primary bg-card border-border rounded focus:ring-primary focus:ring-2 focus:ring-offset-background transition-all" %>
+                <span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors"><%= b.text %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Tempos Litúrgicos</h3>
+          <div class="flex flex-col gap-3">
+            <%= f.collection_check_boxes :liturgical_season_ids, Repertoire::LiturgicalSeason.order(:name), :id, :name do |b| %>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <%= b.check_box class: "w-4 h-4 text-primary bg-card border-border rounded focus:ring-primary focus:ring-2 focus:ring-offset-background transition-all" %>
+                <span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors"><%= b.text %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%= ui.modal_footer class: "flex justify-end gap-3" do %>
+      <%= ui.btn "Cancelar", type: :button, variant: :outline, data: { action: "click->modal#close" } %>
+      <%= ui.btn "Salvar", type: :submit, variant: :default %>
+    <% end %>
+  <% end %>
+<% end %>

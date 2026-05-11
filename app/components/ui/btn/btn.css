@@ -15,7 +15,7 @@
 
   .btn-outline {
     @apply text-foreground border border-border;
-    @apply hover:bg-accent;
+    @apply hover:bg-secondary/12;
   }
 
   .btn-secondary {
@@ -30,7 +30,7 @@
 
   .btn-ghost {
     @apply text-foreground;
-    @apply hover:bg-accent;
+    @apply hover:bg-secondary/12;
   }
 
   .btn-link {

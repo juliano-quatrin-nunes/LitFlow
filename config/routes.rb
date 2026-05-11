@@ -9,6 +9,9 @@ Rails.application.routes.draw do
       patch ":id", to: "musics#update", as: :update
       put ":id", to: "musics#update"
       delete ":id", to: "musics#destroy", as: :destroy
+      
+      get ":id/liturgical_categories/edit", to: "musics/liturgical_categories#edit", as: :edit_liturgical_categories
+      patch ":id/liturgical_categories", to: "musics/liturgical_categories#update", as: :liturgical_categories
     end
   end
 

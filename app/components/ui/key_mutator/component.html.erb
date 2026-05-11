@@ -1,4 +1,4 @@
-<div class="inline-flex items-center bg-secondary/30 border border-border rounded-lg p-0.5" data-controller="key-mutator">
+<div class="inline-flex items-center bg-secondary/12 border border-border rounded-lg p-0.5" data-controller="key-mutator">
   <% lower_key = Repertoire::TranspositionService.transpose_key(@current_key, -1) %>
   <%= helpers.ui.btn url: helpers.repertoire_music_by_author_show_path(@music.author, @music, key: lower_key), 
             variant: :ghost, 
@@ -13,7 +13,7 @@
 
   <%= helpers.ui.dropdown do %>
     <%= helpers.ui.dropdown_trigger as: :badge, 
-                           variant: (is_original? ? :default : :info), 
+                           variant: :default, 
                            size: :md, 
                            class: cn(
                              "cursor-pointer transition-all select-none min-w-[3.5rem] justify-center hover:opacity-80 relative mx-0.5",
@@ -28,7 +28,7 @@
                     turbo_action: "advance",
                   }, 
                   title: "Voltar ao tom original", 
-                  class: "absolute right-0.5 text-info-soft-foreground/70 hover:text-info-soft-foreground hover:bg-info/10 rounded-full p-0.5 transition-colors" do %>
+                  class: "absolute right-0.5 rounded-full p-0.5 transition-colors" do %>
           <span class="icon icon-x-mark !h-3 !w-3"></span>
         <% end %>
       <% end %>

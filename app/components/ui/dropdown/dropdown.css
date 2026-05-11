@@ -19,11 +19,11 @@
 
   .dropdown__link {
     @apply block w-full px-2 py-1.5 text-sm text-left cursor-pointer rounded-btn-md;
-    @apply hover:bg-accent hover:text-accent-foreground;
+    @apply hover:bg-secondary/12;
   }
 
   .dropdown__link-active {
-    @apply bg-accent text-accent-foreground;
+    @apply bg-secondary/12;
   }
 
   .dropdown__divider {

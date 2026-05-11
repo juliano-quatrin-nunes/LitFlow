@@ -6,11 +6,16 @@
         <%= ui.breadcrumb "Músicas", url: repertoire_musics_path %>
         <%= ui.breadcrumb @music.title %>
       <% end %>
-      <div class="mt-2">
-        <h1 class="font-bold text-3xl tracking-tight text-foreground"><%= @music.title %></h1>
-        <p class="text-muted-foreground">
-          <%= link_to @music.author_name, "#", class: "hover:text-foreground transition-colors" %>
-        </p>
+
+      <div class="mt-2 flex flex-col gap-3">
+        <div>
+          <h1 class="font-bold text-3xl tracking-tight text-foreground"><%= @music.title %></h1>
+          <p class="text-muted-foreground">
+            <%= link_to @music.author_name, "#", class: "hover:text-foreground transition-colors" %>
+          </p>
+        </div>
+
+        <%= render partial: "repertoire/musics/liturgical_tags", locals: { music: @music } %>
       </div>
     </div>
 
@@ -39,6 +44,8 @@
         <% end %>
 
         <%= ui.dropdown_menu class: "w-48" do %>
+          <%= ui.dropdown_link "Editar Categorias", url: repertoire_music_by_author_edit_liturgical_categories_path(@music.author, @music), data: { turbo_frame: "modal" } %>
+          <%= ui.dropdown_divider %>
           <%= ui.dropdown_title "Exportar" %>
           <%= ui.dropdown_link disabled: true do %>
             <div class="flex items-center justify-between w-full">
@@ -140,11 +147,4 @@
       </div>
     <% end %>
   <% end %>
-
-  <div class="mt-8 flex justify-between items-center px-4">
-    <%= ui.btn url: repertoire_musics_path, variant: :ghost, size: :sm do %>
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left mr-2 opacity-70"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-      Voltar ao Repertório
-    <% end %>
-  </div>
 </div>

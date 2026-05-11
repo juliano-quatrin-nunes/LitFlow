@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_18_175150) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_10_213536) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,6 +24,42 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_18_175150) do
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_repertoire_authors_on_name", unique: true
     t.index ["slug"], name: "index_repertoire_authors_on_slug", unique: true
+  end
+
+  create_table "repertoire_liturgical_seasons", force: :cascade do |t|
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.string "slug"
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_repertoire_liturgical_seasons_on_slug", unique: true
+  end
+
+  create_table "repertoire_mass_parts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.integer "position"
+    t.string "slug"
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_repertoire_mass_parts_on_slug", unique: true
+  end
+
+  create_table "repertoire_music_liturgical_seasons", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "liturgical_season_id", null: false
+    t.bigint "music_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["liturgical_season_id"], name: "idx_on_liturgical_season_id_7436bfb8df"
+    t.index ["music_id"], name: "index_repertoire_music_liturgical_seasons_on_music_id"
+  end
+
+  create_table "repertoire_music_mass_parts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "mass_part_id", null: false
+    t.bigint "music_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["mass_part_id"], name: "index_repertoire_music_mass_parts_on_mass_part_id"
+    t.index ["music_id"], name: "index_repertoire_music_mass_parts_on_music_id"
   end
 
   create_table "repertoire_musics", force: :cascade do |t|
@@ -181,6 +217,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_18_175150) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  add_foreign_key "repertoire_music_liturgical_seasons", "repertoire_liturgical_seasons", column: "liturgical_season_id"
+  add_foreign_key "repertoire_music_liturgical_seasons", "repertoire_musics", column: "music_id"
+  add_foreign_key "repertoire_music_mass_parts", "repertoire_mass_parts", column: "mass_part_id"
+  add_foreign_key "repertoire_music_mass_parts", "repertoire_musics", column: "music_id"
   add_foreign_key "repertoire_musics", "repertoire_authors", column: "author_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

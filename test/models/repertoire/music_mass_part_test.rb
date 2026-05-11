@@ -1,0 +1,28 @@
+# == Schema Information
+#
+# Table name: repertoire_music_mass_parts
+# Database name: primary
+#
+#  id           :bigint           not null, primary key
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  mass_part_id :bigint           not null
+#  music_id     :bigint           not null
+#
+# Indexes
+#
+#  index_repertoire_music_mass_parts_on_mass_part_id  (mass_part_id)
+#  index_repertoire_music_mass_parts_on_music_id      (music_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (mass_part_id => repertoire_mass_parts.id)
+#  fk_rails_...  (music_id => repertoire_musics.id)
+#
+require "test_helper"
+
+class Repertoire::MusicMassPartTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end

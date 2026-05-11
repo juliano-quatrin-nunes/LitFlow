@@ -14,43 +14,134 @@
     <% end %>
   <% end %>
 
-  <div id="musics">
-    <% if @musics.any? %>
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        <% @musics.each do |music| %>
-          <%= ui.card class: "group flex flex-col h-full hover:border-primary/50 transition-colors shadow-sm" do %>
-            <div class="p-6 flex-grow">
-              <div class="flex justify-between items-start gap-2 mb-1">
-                <h2 class="text-xl font-bold text-foreground leading-tight"><%= music.title %></h2>
-              </div>
-              <p class="text-muted-foreground flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user opacity-50"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <%= music.author_name %>
-              </p>
+  <%= turbo_frame_tag "musics", target: "_top" do %>
+    <div class="flex flex-wrap items-center gap-4 mb-8 bg-muted/30 p-4 rounded-xl border border-border">
+      <div class="flex-grow min-w-[300px]">
+        <%= form_with url: repertoire_musics_path, method: :get, class: "relative", data: { turbo_frame: "musics", turbo_action: "advance" } do |f| %>
+          <%= f.text_field :q, 
+                          label: false,
+                          group_html: { class: "relative" },
+                          value: params[:q], 
+                          placeholder: "Buscar por título, autor ou letra...", 
+                          class: "w-full pl-10 pr-4 py-2 bg-card border-border rounded-lg text-sm focus:ring-primary focus:border-primary transition-all",
+                          autocomplete: "off",
+                          oninput: "this.form.requestSubmit()" do %>
+            <div class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
             </div>
+          <% end %>
+          <%= f.hidden_field :season, value: params[:season] if params[:season].present? %>
+          <%= f.hidden_field :part, value: params[:part] if params[:part].present? %>
+        <% end %>
+      </div>
 
-            <div class="px-6 py-4 bg-muted/30 border-t border-border flex justify-between items-center">
-              <%= ui.badge music.original_key, variant: :info, size: :xs %>
-              <%= ui.btn "Ver Cifra", 
-                        url: repertoire_music_by_author_show_path(music.author, music), 
-                        variant: :link, 
-                        size: :sm,
-                        class: "h-auto p-0 font-semibold" %>
-            </div>
+      <div class="flex items-center gap-4">
+        <div class="h-6 w-px bg-border mx-2 hidden md:block"></div>
+
+        <%= ui.dropdown do %>
+          <%= ui.dropdown_trigger do %>
+            <%= ui.btn variant: params[:season].present? ? :secondary : :outline, size: :sm, class: "gap-2 h-9" do %>
+              Tempo: <%= params[:season].present? ? @seasons.find { |s| s.slug == params[:season] }&.name : "Todos" %>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down opacity-50"><path d="m6 9 6 6 6-6"/></svg>
+            <% end %>
+          <% end %>
+          <%= ui.dropdown_menu class: "w-56" do %>
+            <%= ui.dropdown_link "Todos os Tempos", url: repertoire_musics_path(part: params[:part], q: params[:q]), active: params[:season].blank? %>
+            <%= ui.dropdown_divider %>
+            <% @seasons.each do |season| %>
+              <%= ui.dropdown_link season.name, url: repertoire_musics_path(season: season.slug, part: params[:part], q: params[:q]), active: params[:season] == season.slug %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <%= ui.dropdown do %>
+          <%= ui.dropdown_trigger do %>
+            <%= ui.btn variant: params[:part].present? ? :secondary : :outline, size: :sm, class: "gap-2 h-9" do %>
+              Parte: <%= params[:part].present? ? @parts.find { |p| p.slug == params[:part] }&.name : "Todas" %>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down opacity-50"><path d="m6 9 6 6 6-6"/></svg>
+            <% end %>
+          <% end %>
+          <%= ui.dropdown_menu class: "w-56 max-h-96 overflow-y-auto" do %>
+            <%= ui.dropdown_link "Todas as Partes", url: repertoire_musics_path(season: params[:season], q: params[:q]), active: params[:part].blank? %>
+            <%= ui.dropdown_divider %>
+            <% @parts.each do |part| %>
+              <%= ui.dropdown_link part.name, url: repertoire_musics_path(part: part.slug, season: params[:season], q: params[:q]), active: params[:part] == part.slug %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <% if params[:season].present? || params[:part].present? || params[:q].present? %>
+          <%= ui.btn url: repertoire_musics_path, variant: :ghost, size: :sm, class: "text-muted-foreground hover:text-foreground h-9 px-3" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x mr-1.5 opacity-70"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            Limpar
           <% end %>
         <% end %>
       </div>
-    <% else %>
-      <%= ui.card class: "bg-muted/30 border-dashed" do %>
-        <%= ui.empty do %>
-          <div class="bg-muted p-4 rounded-full mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music text-muted-foreground"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-          </div>
-          <h3 class="text-lg font-semibold mb-2">Seu repertório está vazio</h3>
-          <p class="text-muted-foreground mb-6 max-w-sm">Adicione suas primeiras músicas para começar a organizar sua liturgia.</p>
-          <%= ui.btn "Adicionar minha primeira música", url: new_repertoire_music_path %>
+    </div>
+
+    <div id="musics_list">
+      <% if @musics.any? %>
+        <div class="flex flex-col gap-4">
+          <% @musics.each do |music| %>
+            <%= link_to repertoire_music_by_author_show_path(music.author, music), class: "block group", data: { turbo_frame: "_top" } do %>
+              <%= ui.card class: "hover:border-primary/50 transition-all shadow-sm group-hover:shadow-md" do %>
+                <div class="px-4 py-2 flex flex-col gap-2">
+                  <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                    <div class="flex flex-col gap-1">
+                      <h2 class="text-xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors"><%= music.title %></h2>
+                      <p class="text-sm text-muted-foreground flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user opacity-50"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <%= music.author_name %>
+                      </p>
+                    </div>
+
+                    <% if music.mass_parts.any? || music.liturgical_seasons.any? %>
+                      <div class="flex flex-wrap items-center gap-2 shrink-0 md:justify-end max-w-[350px]">
+                        <% music.mass_parts.each do |part| %>
+                          <%= ui.badge part.name, variant: :secondary, size: :xs %>
+                        <% end %>
+                        <% music.liturgical_seasons.each do |season| %>
+                          <%= ui.badge season.name, variant: :outline, size: :xs %>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <% 
+                    # Extract the first few lines of lyrics for the preview
+                    lines = []
+                    music.content_json.each do |section|
+                      next if section["type"] == "label" || section["type"] == "intro"
+                      section["lines"].each do |line|
+                        lyric = line["parts"].map { |p| p["lyric"] }.join.strip
+                        lines << lyric if lyric.present?
+                        break if lines.size >= 2
+                      end
+                      break if lines.size >= 2
+                    end
+                    preview = lines.join(" / ")
+                  %>
+                  <% if preview.present? %>
+                    <p class="text-sm text-muted-foreground line-clamp-1 italic opacity-70 font-serif">
+                      "<%= preview.truncate(150) %>"
+                    </p>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>          <% end %>
+        </div>
+      <% else %>
+        <%= ui.card class: "bg-muted/30 border-dashed" do %>
+          <%= ui.empty do %>
+            <div class="bg-muted p-4 rounded-full mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music text-muted-foreground"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Nenhuma música encontrada</h3>
+            <p class="text-muted-foreground mb-6 max-w-sm">Tente ajustar seus filtros ou busca.</p>
+            <%= ui.btn "Limpar tudo", url: repertoire_musics_path %>
+          <% end %>
         <% end %>
       <% end %>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 </div>

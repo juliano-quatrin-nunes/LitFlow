@@ -1,0 +1,17 @@
+<div id="music_header_tags">
+  <% if music.mass_parts.any? || music.liturgical_seasons.any? %>
+    <div class="flex flex-wrap items-center gap-2">
+      <% music.mass_parts.each do |part| %>
+        <%= link_to repertoire_musics_path(part: part.slug), data: { turbo_frame: :_top } do %>
+          <%= ui.badge part.name, variant: :secondary, class: "hover:bg-secondary/20 transition-colors cursor-pointer" %>
+        <% end %>
+      <% end %>
+
+      <% music.liturgical_seasons.each do |season| %>
+        <%= link_to repertoire_musics_path(season: season.slug), data: { turbo_frame: :_top } do %>
+          <%= ui.badge season.name, variant: :outline, class: "hover:bg-secondary/12 transition-colors cursor-pointer" %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

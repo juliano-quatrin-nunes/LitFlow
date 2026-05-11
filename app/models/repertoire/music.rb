@@ -25,6 +25,12 @@
 class Repertoire::Music < ApplicationRecord
   belongs_to :author, class_name: "Repertoire::Author"
 
+  has_many :music_liturgical_seasons, class_name: "Repertoire::MusicLiturgicalSeason", dependent: :destroy
+  has_many :liturgical_seasons, through: :music_liturgical_seasons
+
+  has_many :music_mass_parts, class_name: "Repertoire::MusicMassPart", dependent: :destroy
+  has_many :mass_parts, through: :music_mass_parts
+
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: { scope: :author_id }
 
