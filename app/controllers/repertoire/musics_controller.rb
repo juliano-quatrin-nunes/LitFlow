@@ -72,7 +72,7 @@ module Repertoire
     end
 
     def music_params
-      params.expect(repertoire_music: [ :title, :author_name, :original_key, :content_raw ])
+      params.expect(repertoire_music: [ :title, :author_id, :original_key, :content_raw, :youtube_url ])
     end
   end
 end

@@ -21,9 +21,9 @@
   --primary: oklch(0.35 0.08 285);
   --primary-foreground: #ffffff;
 
-  /* #C99542 (Gold) -> Accent */
-  --accent: oklch(0.68 0.13 75);
-  --accent-foreground: #ffffff;
+  /* #C99542 (Gold) -> Accent — lifted lightness for contrast on dark surfaces */
+  --accent: oklch(0.82 0.14 80);
+  --accent-foreground: oklch(0.25 0.05 62);
 
   /* #452400 (Deep Brown) -> Secondary */
   --secondary: oklch(0.2982 0.0685 62.12);

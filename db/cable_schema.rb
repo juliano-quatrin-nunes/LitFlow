@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_10_213536) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_11_130502) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -71,6 +71,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_10_213536) do
     t.string "slug"
     t.string "title"
     t.datetime "updated_at", null: false
+    t.string "youtube_url"
     t.index ["author_id"], name: "index_repertoire_musics_on_author_id"
     t.index ["slug"], name: "index_repertoire_musics_on_slug", unique: true
   end

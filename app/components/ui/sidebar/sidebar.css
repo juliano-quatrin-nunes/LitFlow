@@ -21,7 +21,7 @@
   }
 
   .sidebar__link-active {
-    @apply font-semibold bg-muted text-foreground;
+    @apply font-semibold bg-accent/20 text-secondary;
   }
 
   .sidebar__link-disabled {

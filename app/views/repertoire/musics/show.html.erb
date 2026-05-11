@@ -20,21 +20,6 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
-      <div class="flex items-center p-1 bg-muted rounded-lg border border-border">
-        <button data-action="click->music-view-mode#showMusician"
-                data-music-view-mode-target="button"
-                data-mode="musician"
-                class="px-4 py-1.5 rounded-md font-medium text-sm transition-all duration-200">
-          Cifra
-        </button>
-        <button data-action="click->music-view-mode#showProjection"
-                data-music-view-mode-target="button"
-                data-mode="projection"
-                class="px-4 py-1.5 rounded-md font-medium text-sm transition-all duration-200">
-          Projeção
-        </button>
-      </div>
-
       <%= ui.dropdown do %>
         <%= ui.dropdown_trigger do %>
           <%= ui.btn variant: :outline, size: :sm do %>
@@ -43,8 +28,35 @@
           <% end %>
         <% end %>
 
-        <%= ui.dropdown_menu class: "w-48" do %>
+        <%= ui.dropdown_menu class: "w-56" do %>
           <%= ui.dropdown_link "Editar Categorias", url: repertoire_music_by_author_edit_liturgical_categories_path(@music.author, @music), data: { turbo_frame: "modal" } %>
+
+          <%= ui.dropdown_divider %>
+          <%= ui.dropdown_title "Copiar" %>
+
+          <textarea id="music-raw-content" class="hidden"><%= @music.content_raw %></textarea>
+          <%= ui.dropdown_link "#", data: { 
+                      controller: "clipboard", 
+                      action: "clipboard#copy", 
+                      clipboard_source_id_value: "music-raw-content",
+                      clipboard_success_text_value: "Copiado!" 
+                    } do %>
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Copiar Cifras
+            </div>
+          <% end %>
+
+          <%= ui.dropdown_link disabled: true do %>
+            <div class="flex items-center justify-between w-full opacity-50">
+              <span class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-type"><path d="m3 7 2 12 10-2 2-12"/><path d="M7 14.5h8"/></svg>
+                Copiar Letra
+              </span>
+              <%= ui.badge "Em breve", size: :xs %>
+            </div>
+          <% end %>
+
           <%= ui.dropdown_divider %>
           <%= ui.dropdown_title "Exportar" %>
           <%= ui.dropdown_link disabled: true do %>
@@ -65,6 +77,7 @@
               <%= ui.badge "Em breve", size: :xs %>
             </div>
           <% end %>
+
           <%= ui.dropdown_divider %>
           <%= ui.dropdown_link "Editar Música", url: repertoire_music_by_author_edit_path(@music.author, @music), data: { turbo_frame: :_top } %>
           <%= ui.dropdown_link "Excluir Música", 
@@ -77,74 +90,133 @@
   <% end %>
 
   <%= turbo_frame_tag "music_display" do %>
-    <%= ui.card class: "overflow-hidden shadow-sm" do %>
-      <!-- Toolbar -->
-      <div class="px-4 md:px-8 py-3 bg-muted/50 border-b border-border flex flex-wrap justify-between items-center gap-4">
-        <div class="flex items-center gap-3">
-          <span class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Tom:</span>
-          <%= ui.key_mutator music: @music, current_key: @current_key %>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <textarea id="music-raw-content" class="hidden"><%= @music.content_raw %></textarea>
-          <%= ui.btn variant: :ghost, 
-                    size: :sm, 
-                    class: "h-8 px-2.5",
-                    data: { 
-                      controller: "clipboard", 
-                      action: "clipboard#copy", 
-                      clipboard_source_id_value: "music-raw-content",
-                      clipboard_success_text_value: "Copiado!" 
-                    } do %>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy mr-1.5 opacity-70"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copiar
-          <% end %>
-        </div>
-      </div>
-
-      <!-- Musician View -->
-      <div data-music-view-mode-target="musician" class="md:p-8 p-4 font-mono text-lg leading-relaxed bg-card text-card-foreground overflow-x-auto min-h-[500px]">
-        <% @content_json.each do |section| %>
-          <div class="<%= cn(section["type"] == "label" ? "mb-2 mt-6 first:mt-0" : "mb-8 last:mb-0") %>">
-            <% if section["type"] == "label" %>
-              <div class="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] border-b border-border pb-1 mb-3">
-                <%= section["lines"].first["parts"].first["lyric"] %>
-              </div>
-            <% else %>
-              <% section["lines"].each do |line| %>
-                <div class="flex flex-wrap items-end">
-                  <% line["parts"].each do |part| %>
-                    <div class="<%= cn("inline-flex flex-col", "pr-2": section["type"] == "intro") %>">
-                      <div class="text-blue-600 font-bold text-sm leading-none h-[1.2em] flex items-end">
-                        <%= part["chord"] if part["chord"].present? %>
-                      </div>
-                      <% if section["type"] != "intro" %>
-                        <div class="text-foreground whitespace-pre"><%= part["lyric"].presence || (part["chord"].present? ? " " : "") %></div>
-                      <% end %>
-                    </div>
-                  <% end %>
-                </div>
-              <% end %>
-            <% end %>
+    <div>
+      <%= ui.card class: "overflow-hidden shadow-sm" do %>
+        <!-- Toolbar -->
+        <div class="px-4 md:px-8 py-3 bg-muted/50 border-b border-border flex flex-wrap justify-between items-center gap-4">
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Tom:</span>
+            <%= ui.key_mutator music: @music, current_key: @current_key %>
           </div>
-        <% end %>
-      </div>
 
-      <!-- Projection View -->
-      <div data-music-view-mode-target="projection" class="hidden p-12 bg-gray-900 text-white text-center min-h-[600px] flex flex-col justify-center">
-        <div class="max-w-3xl mx-auto space-y-16">
-          <% @content_json.reject { |s| %w[label intro].include?(s["type"]) }.each do |section| %>
-            <div class="space-y-6">
-              <% section["lines"].each do |line| %>
-                <% lyric_line = line["parts"].map { |p| p["lyric"] }.join.strip %>
-                <% if lyric_line.present? %>
-                  <p class="text-4xl font-semibold leading-tight tracking-tight"><%= lyric_line %></p>
+          <div class="flex items-center p-1 bg-muted rounded-lg border border-border">
+            <button data-action="click->music-view-mode#showMusician"
+                    data-music-view-mode-target="button"
+                    data-mode="musician"
+                    class="px-4 py-1.5 rounded-md font-medium text-sm transition-all duration-200">
+              Cifra
+            </button>
+            <button data-action="click->music-view-mode#showProjection"
+                    data-music-view-mode-target="button"
+                    data-mode="projection"
+                    class="px-4 py-1.5 rounded-md font-medium text-sm transition-all duration-200">
+              Projeção
+            </button>
+          </div>
+        </div>
+
+        <!-- Musician View -->
+        <div data-music-view-mode-target="musician" class="md:p-8 p-4 font-mono text-lg leading-relaxed bg-card text-card-foreground overflow-x-auto min-h-[500px]">
+          <% @content_json.each do |section| %>
+            <div class="<%= cn(section["type"] == "label" ? "mb-2 mt-6 first:mt-0" : "mb-8 last:mb-0") %>">
+              <% if section["type"] == "label" %>
+                <div class="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] border-b border-border pb-1 mb-3">
+                  <%= section["lines"].first["parts"].first["lyric"] %>
+                </div>
+              <% else %>
+                <% section["lines"].each do |line| %>
+                  <div class="flex flex-wrap items-end">
+                    <% line["parts"].each do |part| %>
+                      <div class="<%= cn("inline-flex flex-col", "pr-2": section["type"] == "intro") %>">
+                        <div class="text-primary font-bold text-sm leading-none h-[1.2em] flex items-end">
+                          <%= part["chord"] if part["chord"].present? %>
+                        </div>
+                        <% if section["type"] != "intro" %>
+                          <div class="text-foreground whitespace-pre"><%= part["lyric"].presence || (part["chord"].present? ? " " : "") %></div>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
                 <% end %>
               <% end %>
             </div>
           <% end %>
         </div>
-      </div>
-    <% end %>
+
+        <!-- Projection View -->
+        <div data-music-view-mode-target="projection" class="hidden p-12 bg-gray-900 text-white text-center min-h-[600px] flex flex-col justify-center">
+          <div class="max-w-3xl mx-auto space-y-16">
+            <% @content_json.reject { |s| %w[label intro].include?(s["type"]) }.each do |section| %>
+              <div class="space-y-6">
+                <% section["lines"].each do |line| %>
+                  <% lyric_line = line["parts"].map { |p| p["lyric"] }.join.strip %>
+                  <% if lyric_line.present? %>
+                    <p class="text-4xl font-semibold leading-tight tracking-tight"><%= lyric_line %></p>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
   <% end %>
 </div>
+
+<% if (video_id = @music.youtube_video_id) %>
+  <% content_for :bottom_bar do %>
+  <div data-controller="youtube-player"
+       data-youtube-player-video-id-value="<%= video_id %>"
+       class="shrink-0 bg-secondary border-t border-white/10 shadow-[0_-8px_30px_rgba(0,0,0,0.25)] p-4 text-secondary-foreground"
+       id="audio-mini-player">
+    <div class="max-w-5xl mx-auto flex items-center gap-4 md:gap-8 px-4">
+      <!-- Controls -->
+      <div class="flex items-center gap-2">
+        <button data-action="click->youtube-player#togglePlay"
+                class="h-10 w-10 flex items-center justify-center rounded-full bg-accent text-secondary hover:scale-105 transition-transform shadow-md">
+          <div data-youtube-player-target="playButton">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="m7 4 12 8-12 8V4z"/></svg>
+          </div>
+          <div data-youtube-player-target="pauseButton" class="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </div>
+        </button>
+      </div>
+
+      <!-- Info & Progress -->
+      <div class="flex-grow min-w-0">
+        <div class="flex items-baseline justify-between gap-4 mb-1">
+          <div class="truncate">
+            <span data-youtube-player-target="title" class="font-bold text-sm text-secondary-foreground"><%= @music.title %></span>
+            <span data-youtube-player-target="channel" class="text-xs text-secondary-foreground/60 ml-2 hidden sm:inline"><%= @music.author_name %></span>
+          </div>
+          <div class="flex items-center gap-1.5 font-mono text-[10px] text-secondary-foreground/60 tabular-nums">
+            <span data-youtube-player-target="currentTime">0:00</span>
+            <span>/</span>
+            <span data-youtube-player-target="duration">0:00</span>
+          </div>
+        </div>
+        <div class="relative w-full">
+          <input type="range"
+                 min="0"
+                 value="0"
+                 step="1"
+                 data-youtube-player-target="progress"
+                 data-action="input->youtube-player#seek"
+                 class="w-full h-1.5 bg-white/15 rounded-lg appearance-none cursor-pointer accent-accent">
+        </div>
+      </div>
+
+      <!-- External Link -->
+      <div class="flex items-center gap-3 shrink-0">
+        <a href="https://youtube.com/watch?v=<%= video_id %>"
+           target="_blank"
+           class="hidden sm:flex items-center gap-1.5 text-xs text-secondary-foreground/60 hover:text-accent transition-colors">
+          <span>Ver no</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-youtube"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <% end %>
+<% end %>

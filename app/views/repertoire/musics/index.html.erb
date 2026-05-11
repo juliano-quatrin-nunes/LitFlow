@@ -17,7 +17,7 @@
   <%= turbo_frame_tag "musics", target: "_top" do %>
     <div class="flex flex-wrap items-center gap-4 mb-8 bg-muted/30 p-4 rounded-xl border border-border">
       <div class="flex-grow min-w-[300px]">
-        <%= form_with url: repertoire_musics_path, method: :get, class: "relative", data: { turbo_frame: "musics", turbo_action: "advance" } do |f| %>
+        <%= form_with url: repertoire_musics_path, method: :get, class: "relative", data: { controller: "search", turbo_frame: "musics", turbo_action: "advance" } do |f| %>
           <%= f.text_field :q, 
                           label: false,
                           group_html: { class: "relative" },
@@ -25,7 +25,10 @@
                           placeholder: "Buscar por título, autor ou letra...", 
                           class: "w-full pl-10 pr-4 py-2 bg-card border-border rounded-lg text-sm focus:ring-primary focus:border-primary transition-all",
                           autocomplete: "off",
-                          oninput: "this.form.requestSubmit()" do %>
+                          data: { 
+                            search_target: "input",
+                            action: "input->search#search" 
+                          } do %>
             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
             </div>
@@ -61,7 +64,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down opacity-50"><path d="m6 9 6 6 6-6"/></svg>
             <% end %>
           <% end %>
-          <%= ui.dropdown_menu class: "w-56 max-h-96 overflow-y-auto" do %>
+          <%= ui.dropdown_menu class: "w-56" do %>
             <%= ui.dropdown_link "Todas as Partes", url: repertoire_musics_path(season: params[:season], q: params[:q]), active: params[:part].blank? %>
             <%= ui.dropdown_divider %>
             <% @parts.each do |part| %>

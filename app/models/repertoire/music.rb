@@ -9,6 +9,7 @@
 #  original_key :string
 #  slug         :string
 #  title        :string
+#  youtube_url  :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  author_id    :bigint           not null
@@ -44,6 +45,19 @@ class Repertoire::Music < ApplicationRecord
 
   def author_name
     author&.name
+  end
+
+  def youtube_video_id
+    return nil if youtube_url.blank?
+
+    # Handle various YouTube URL formats:
+    # - Standard: https://www.youtube.com/watch?v=VIDEO_ID
+    # - Short: https://youtu.be/VIDEO_ID
+    # - Embed: https://www.youtube.com/embed/VIDEO_ID
+    # - With playlists/params: https://www.youtube.com/watch?v=VIDEO_ID&list=...
+    if youtube_url =~ /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+      $1
+    end
   end
 
   def content_json
