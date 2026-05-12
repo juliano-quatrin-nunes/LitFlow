@@ -1,0 +1,70 @@
+<%= ui.header class: "mb-8" do %>
+  <div class="flex flex-col gap-1">
+    <%= ui.breadcrumbs do %>
+      <%= ui.breadcrumb "Gestão" %>
+      <%= ui.breadcrumb "Convites" %>
+    <% end %>
+    <h1 class="font-bold text-3xl tracking-tight text-foreground">Gerenciar Convites</h1>
+  </div>
+<% end %>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div class="lg:col-span-1">
+    <%= ui.card class: "p-6" do %>
+      <h2 class="text-xl font-bold mb-4">Novo Convite</h2>
+      <%= form_with model: [:admin, @invitation], class: "space-y-4" do |f| %>
+        <div>
+          <%= f.label :email, "E-mail do convidado", class: "block text-sm font-medium mb-1" %>
+          <%= f.email_field :email, placeholder: "email@exemplo.com", class: "w-full rounded-md border-border" %>
+          <% if @invitation.errors[:email].any? %>
+            <p class="text-destructive text-xs mt-1"><%= @invitation.errors[:email].first %></p>
+          <% end %>
+        </div>
+        <%= f.submit "Gerar Link", class: "w-full bg-primary text-primary-foreground py-2 px-4 rounded-md font-medium hover:opacity-90 transition-opacity" %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="lg:col-span-2">
+    <%= ui.card class: "overflow-hidden" do %>
+      <%= ui.table do %>
+        <thead>
+          <tr class="border-b border-border bg-muted/50">
+            <th class="text-left py-3 px-4 font-semibold text-sm">Email</th>
+            <th class="text-left py-3 px-4 font-semibold text-sm">Link de Cadastro</th>
+            <th class="text-left py-3 px-4 font-semibold text-sm">Expira em</th>
+            <th class="py-3 px-4"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          <% @invitations.each do |invitation| %>
+            <tr class="<%= invitation.expired? ? 'opacity-50 grayscale' : '' %>">
+              <td class="py-3 px-4 text-sm font-medium"><%= invitation.email %></td>
+              <td class="py-3 px-4 text-sm">
+                <div class="flex items-center gap-2">
+                  <input type="text" readonly value="<%= new_registration_url(token: invitation.token) %>" class="bg-muted text-xs p-1 rounded border border-border w-48 truncate" id="token-<%= invitation.id %>">
+                  <button data-controller="clipboard" data-action="clipboard#copy" data-clipboard-source-id-value="token-<%= invitation.id %>" class="text-primary hover:text-primary/80">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                  </button>
+                </div>
+              </td>
+              <td class="py-3 px-4 text-sm">
+                <%= invitation.expired? ? "Expirado" : time_ago_in_words(invitation.expires_at) %>
+              </td>
+              <td class="py-3 px-4 text-right">
+                <%= link_to admin_invitation_path(invitation), data: { turbo_method: :delete, turbo_confirm: "Excluir convite?" }, class: "text-destructive hover:opacity-80" do %>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @invitations.empty? %>
+            <tr>
+              <td colspan="4" class="py-8 text-center text-muted-foreground italic">Nenhum convite gerado ainda.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      <% end %>
+    <% end %>
+  </div>
+</div>

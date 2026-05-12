@@ -1,6 +1,14 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
+  
+  get "register/:token", to: "registrations#new", as: :new_registration
+  post "register/:token", to: "registrations#create", as: :registration
+
+  namespace :admin do
+    resources :invitations, only: [ :index, :create, :destroy ]
+  end
+
   namespace :repertoire do
     resources :authors, only: [ :index, :create ]
     resources :musics, only: [ :index, :new, :create ]

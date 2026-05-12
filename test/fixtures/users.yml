@@ -16,10 +16,12 @@
 #
 #  index_users_on_email_address  (email_address) UNIQUE
 #
-one:
-  email_address: one@example.com
+admin:
+  email_address: admin@example.com
   password_digest: <%= password_digest %>
+  role: 1
 
-two:
-  email_address: two@example.com
+user:
+  email_address: user@example.com
   password_digest: <%= password_digest %>
+  role: 0

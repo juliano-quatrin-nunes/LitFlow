@@ -10,11 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_122941) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_140402) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "data_migrations", primary_key: "version", id: :string, force: :cascade do |t|
+  end
+
+  create_table "invitations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.datetime "expires_at"
+    t.string "token"
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_invitations_on_token", unique: true
   end
 
   create_table "repertoire_authors", force: :cascade do |t|
