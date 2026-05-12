@@ -1,5 +1,6 @@
 <div data-controller="music-view-mode" data-music-view-mode-active-class="bg-primary text-primary-foreground shadow-sm">
-  <%= ui.header class: "mb-8" do %>
+  <%= turbo_frame_tag "music_display", data: { turbo_action: "advance" } do %>
+    <%= ui.header class: "mb-8" do %>
     <div class="flex flex-col gap-1">
       <%= ui.breadcrumbs do %>
         <%= ui.breadcrumb "Biblioteca", url: repertoire_musics_path %>
@@ -103,10 +104,10 @@
                               data: { turbo_method: :delete, turbo_confirm: "Tem certeza?" } %>
         <% end %>
       <% end %>
+    <% end %>
     </div>
-  <% end %>
+    <% end %>
 
-  <%= turbo_frame_tag "music_display" do %>
     <div>
       <%= ui.card class: "overflow-hidden shadow-sm" do %>
         <!-- Toolbar -->

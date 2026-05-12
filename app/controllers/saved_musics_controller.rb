@@ -9,16 +9,16 @@ class SavedMusicsController < ApplicationController
     @saved_music.assign_attributes(saved_music_params)
 
     if @saved_music.save
-      redirect_to repertoire_music_by_author_show_path(@music.author, @music), notice: "Música adicionada ao seu repertório."
+      redirect_to repertoire_music_by_author_show_path(@music.author, @music, key: @saved_music.preferred_key), notice: "Música adicionada ao seu repertório."
     else
-      redirect_to repertoire_music_by_author_show_path(@music.author, @music), alert: "Não foi possível salvar a música."
+      redirect_to repertoire_music_by_author_show_path(@music.author, @music, key: @saved_music.preferred_key), alert: "Não foi possível salvar a música."
     end
   end
 
   def update
     @saved_music = Current.user.saved_musics.find(params[:id])
     if @saved_music.update(saved_music_params)
-      redirect_to repertoire_music_by_author_show_path(@saved_music.music.author, @saved_music.music), notice: "Alterações salvas."
+      redirect_to repertoire_music_by_author_show_path(@saved_music.music.author, @saved_music.music, key: @saved_music.preferred_key), notice: "Alterações salvas."
     else
       render :edit, status: :unprocessable_entity
     end

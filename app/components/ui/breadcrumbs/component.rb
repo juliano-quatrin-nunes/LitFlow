@@ -6,19 +6,16 @@ class Ui::Breadcrumbs::Component < ApplicationComponent
 
   def call
     content_tag :nav, class: classes, aria: { label: "Breadcrumb" }, **@options.except(:class) do
-      # Render children and interleave with separators
-      items = content.to_s.scan(/<span.*?<\/span>|<a.*?<\/a>/m).reject(&:blank?)
-      
-      safe_join(items.each_with_index.map do |item, index|
-        if index < items.size - 1
-          safe_join([
-            item.html_safe,
-            content_tag(:span, @separator, class: "mx-2 text-muted-foreground/50 font-normal")
-          ])
-        else
-          item.html_safe
-        end
-      end)
+      doc = Nokogiri::HTML::DocumentFragment.parse(content.to_s)
+
+      elements = doc.children.select(&:element?)
+
+      elements[0...-1].each do |element|
+        separator_html = content_tag(:span, @separator, class: "mx-2 text-muted-foreground/50 font-normal")
+        element.add_next_sibling(separator_html)
+      end
+
+      doc.to_html.html_safe
     end
   end
 

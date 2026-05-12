@@ -11,23 +11,7 @@
 <% if @saved_musics.any? %>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     <% @saved_musics.each do |saved| %>
-      <%= link_to repertoire_music_by_author_show_path(saved.music.author, saved.music), class: "group" do %>
-        <%= ui.card class: "p-5 hover:border-primary/50 transition-all hover:shadow-md h-full flex flex-col" do %>
-          <div class="flex justify-between items-start mb-2">
-            <h2 class="font-bold text-lg group-hover:text-primary transition-colors leading-tight"><%= saved.music.title %></h2>
-            <%= ui.badge saved.preferred_key, variant: :outline, class: "bg-primary/5 text-primary border-primary/20" %>
-          </div>
-          <p class="text-sm text-muted-foreground mb-4"><%= saved.music.author_name %></p>
-          
-          <% if saved.remarks.present? %>
-            <div class="mt-auto pt-3 border-t border-border/50">
-              <p class="text-xs text-muted-foreground line-clamp-2 italic italic">
-                "<%= saved.remarks %>"
-              </p>
-            </div>
-          <% end %>
-        <% end %>
-      <% end %>
+      <%= render partial: "repertoire/musics/music_card", locals: { music: saved.music, preferred_key: saved.preferred_key, remarks: saved.remarks } %>
     <% end %>
   </div>
 <% else %>

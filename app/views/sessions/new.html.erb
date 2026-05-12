@@ -1,31 +1,58 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <% if alert = flash[:alert] %>
-    <p class="py-2 px-3 bg-red-50 mb-5 text-red-500 font-medium rounded-lg inline-block" id="alert"><%= alert %></p>
-  <% end %>
+<div class="mx-auto max-w-sm w-full py-12">
+  <div class="text-center mb-10">
+    <%= link_to root_path, class: "inline-flex items-center gap-2.5 font-bold text-3xl tracking-tight" do %>
+      <span class="bg-primary text-primary-foreground p-2 rounded-xl shadow-md">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </span>
+      <span class="text-secondary tracking-tight">Litflow</span>
+    <% end %>
+    <p class="text-muted-foreground mt-3">Acesse seu repertório e setlists</p>
+  </div>
 
-  <% if notice = flash[:notice] %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
-  <% end %>
+  <%= ui.card class: "p-8 shadow-sm border-border/50" do %>
+    <% if alert = flash[:alert] %>
+      <div class="py-2.5 px-4 bg-destructive/10 border border-destructive/20 mb-6 text-destructive text-sm font-medium rounded-lg text-center">
+        <%= alert %>
+      </div>
+    <% end %>
 
-  <h1 class="font-bold text-4xl">Sign in</h1>
+    <% if notice = flash[:notice] %>
+      <div class="py-2.5 px-4 bg-success/10 border border-success/20 mb-6 text-success-foreground text-sm font-medium rounded-lg text-center">
+        <%= notice %>
+      </div>
+    <% end %>
 
-  <%= form_with url: session_url, class: "contents" do |form| %>
-    <div class="my-5">
-      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
-    </div>
+    <%= form_with url: session_url, class: "space-y-6" do |form| %>
+      <%= form.email_field :email_address, 
+          label: "E-mail",
+          required: true, 
+          autofocus: true, 
+          autocomplete: "username", 
+          placeholder: "seu@email.com", 
+          value: params[:email_address], 
+          class: "block w-full rounded-md border-border bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" %>
 
-    <div class="my-5">
-      <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72, class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
-    </div>
-
-    <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
-      <div class="inline">
-        <%= form.submit "Sign in", class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+      <div class="space-y-1">
+        <div class="flex items-center justify-between">
+          <%= form.label :password, "Senha", class: "block text-sm font-medium text-foreground" %>
+          <%= link_to "Esqueceu a senha?", new_password_path, class: "text-xs text-primary hover:underline font-medium" %>
+        </div>
+        <%= form.password_field :password, 
+            label: false,
+            required: true, 
+            autocomplete: "current-password", 
+            placeholder: "••••••••", 
+            maxlength: 72, 
+            class: "block w-full rounded-md border-border bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" %>
       </div>
 
-      <div class="mt-4 text-sm text-gray-500 sm:mt-0">
-        <%= link_to "Forgot password?", new_password_path, class: "text-gray-700 underline hover:no-underline" %>
+      <div class="pt-2">
+        <%= form.submit "Entrar", class: "w-full cursor-pointer rounded-md px-4 py-2.5 bg-primary hover:opacity-90 text-primary-foreground font-bold transition-all shadow-md active:scale-[0.98]" %>
       </div>
-    </div>
+    <% end %>
   <% end %>
+
+  <p class="mt-8 text-center text-sm text-muted-foreground">
+    Não tem uma conta? <span class="font-medium text-foreground">Peça um convite ao administrador.</span>
+  </p>
 </div>

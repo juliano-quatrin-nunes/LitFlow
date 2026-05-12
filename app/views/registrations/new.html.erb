@@ -1,26 +1,50 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <% if @user.errors.any? %>
-    <div class="py-2 px-3 bg-red-50 mb-5 text-red-500 font-medium rounded-lg inline-block">
-      <%= @user.errors.full_messages.to_sentence %>
-    </div>
-  <% end %>
+<div class="mx-auto max-w-sm w-full py-12">
+  <div class="text-center mb-10">
+    <%= link_to root_path, class: "inline-flex items-center gap-2.5 font-bold text-3xl tracking-tight" do %>
+      <span class="bg-primary text-primary-foreground p-2 rounded-xl shadow-md">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </span>
+      <span class="text-secondary tracking-tight">Litflow</span>
+    <% end %>
+    <h1 class="font-bold text-2xl tracking-tight text-foreground mt-6">Criar sua conta</h1>
+    <p class="text-muted-foreground mt-2">Crie sua conta para acessar o sistema.</p>
+  </div>
 
-  <h1 class="font-bold text-4xl">Criar sua conta</h1>
-  <p class="text-muted-foreground mt-2">Você foi convidado para participar do Litflow com o e-mail: <strong><%= @invitation.email %></strong></p>
+  <%= ui.card class: "p-8 shadow-sm border-border/50" do %>
+    <% if @user.errors.any? %>
+      <div class="py-2.5 px-4 bg-destructive/10 border border-destructive/20 mb-6 text-destructive text-sm font-medium rounded-lg text-center">
+        <%= @user.errors.full_messages.to_sentence %>
+      </div>
+    <% end %>
 
-  <%= form_with model: @user, url: registration_path(token: @invitation.token), class: "contents" do |form| %>
-    <div class="my-5">
-      <%= form.label :password, "Senha" %>
-      <%= form.password_field :password, required: true, autocomplete: "new-password", placeholder: "Mínimo 8 caracteres", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
-    </div>
+    <%= form_with model: @user, url: registration_path(token: @invitation.token) do |form| %>
+      <div class="flex flex-col gap-4">
+        <%= form.email_field :email_address, 
+            label: "Seu E-mail",
+            required: true, 
+            autofocus: true,
+            autocomplete: "email", 
+            placeholder: "seu@email.com", 
+            class: "block w-full rounded-md border-border bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" %>
 
-    <div class="my-5">
-      <%= form.label :password_confirmation, "Confirme sua senha" %>
-      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", placeholder: "Repita a senha", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
-    </div>
+        <%= form.password_field :password, 
+            label: "Senha",
+            required: true, 
+            autocomplete: "new-password", 
+            placeholder: "Mínimo 8 caracteres", 
+            class: "block w-full rounded-md border-border bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" %>
 
-    <div class="inline">
-      <%= form.submit "Criar Conta", class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
-    </div>
+        <%= form.password_field :password_confirmation, 
+            label: "Confirme sua senha",
+            required: true, 
+            autocomplete: "new-password", 
+            placeholder: "Repita a senha", 
+            class: "block w-full rounded-md border-border bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" %>
+
+        <div class="pt-2">
+          <%= form.submit "Criar Conta", class: "w-full cursor-pointer rounded-md px-4 py-2.5 bg-primary hover:opacity-90 text-primary-foreground font-bold transition-all shadow-md active:scale-[0.98]" %>
+        </div>
+      </div>
+    <% end %>
   <% end %>
 </div>

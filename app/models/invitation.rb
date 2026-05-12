@@ -16,9 +16,7 @@
 #
 class Invitation < ApplicationRecord
   has_secure_token
-  
-  validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-  
+
   before_create :set_expiration
 
   def expired?

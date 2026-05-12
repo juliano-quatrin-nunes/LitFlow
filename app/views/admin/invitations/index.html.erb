@@ -13,14 +13,13 @@
     <%= ui.card class: "p-6" do %>
       <h2 class="text-xl font-bold mb-4">Novo Convite</h2>
       <%= form_with model: [:admin, @invitation], class: "space-y-4" do |f| %>
-        <div>
-          <%= f.label :email, "E-mail do convidado", class: "block text-sm font-medium mb-1" %>
-          <%= f.email_field :email, placeholder: "email@exemplo.com", class: "w-full rounded-md border-border" %>
-          <% if @invitation.errors[:email].any? %>
-            <p class="text-destructive text-xs mt-1"><%= @invitation.errors[:email].first %></p>
+          <% if @invitation.errors.any? %>
+            <div class="py-2.5 px-4 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium rounded-lg text-center mb-4">
+              <%= @invitation.errors.full_messages.to_sentence %>
+            </div>
           <% end %>
-        </div>
-        <%= f.submit "Gerar Link", class: "w-full bg-primary text-primary-foreground py-2 px-4 rounded-md font-medium hover:opacity-90 transition-opacity" %>
+
+        <%= f.submit "Gerar Link de Convite", class: "w-full bg-primary text-primary-foreground py-2 px-4 rounded-md font-medium hover:opacity-90 transition-opacity" %>
       <% end %>
     <% end %>
   </div>
@@ -30,7 +29,6 @@
       <%= ui.table do %>
         <thead>
           <tr class="border-b border-border bg-muted/50">
-            <th class="text-left py-3 px-4 font-semibold text-sm">Email</th>
             <th class="text-left py-3 px-4 font-semibold text-sm">Link de Cadastro</th>
             <th class="text-left py-3 px-4 font-semibold text-sm">Expira em</th>
             <th class="py-3 px-4"></th>
@@ -39,7 +37,6 @@
         <tbody class="divide-y divide-border">
           <% @invitations.each do |invitation| %>
             <tr class="<%= invitation.expired? ? 'opacity-50 grayscale' : '' %>">
-              <td class="py-3 px-4 text-sm font-medium"><%= invitation.email %></td>
               <td class="py-3 px-4 text-sm">
                 <div class="flex items-center gap-2">
                   <input type="text" readonly value="<%= new_registration_url(token: invitation.token) %>" class="bg-muted text-xs p-1 rounded border border-border w-48 truncate" id="token-<%= invitation.id %>">
@@ -60,7 +57,7 @@
           <% end %>
           <% if @invitations.empty? %>
             <tr>
-              <td colspan="4" class="py-8 text-center text-muted-foreground italic">Nenhum convite gerado ainda.</td>
+              <td colspan="3" class="py-8 text-center text-muted-foreground italic">Nenhum convite gerado ainda.</td>
             </tr>
           <% end %>
         </tbody>

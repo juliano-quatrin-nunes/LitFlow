@@ -6,7 +6,7 @@ module Admin
     end
 
     def create
-      @invitation = Invitation.new(invitation_params)
+      @invitation = Invitation.new
       if @invitation.save
         redirect_to admin_invitations_path, notice: "Convite gerado com sucesso!"
       else
@@ -21,10 +21,5 @@ module Admin
       redirect_to admin_invitations_path, notice: "Convite excluído."
     end
 
-    private
-
-    def invitation_params
-      params.expect(invitation: [ :email ])
-    end
   end
 end
