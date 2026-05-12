@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resource :session
+  resources :passwords, param: :token
   namespace :repertoire do
     resources :authors, only: [ :index, :create ]
     resources :musics, only: [ :index, :new, :create ]

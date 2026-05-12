@@ -1,5 +1,6 @@
 module Repertoire
   class MusicsController < ApplicationController
+    allow_unauthenticated_access only: %i[ index show ]
     before_action :set_music, only: %i[show edit update destroy]
 
     def index

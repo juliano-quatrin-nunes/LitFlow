@@ -40,3 +40,9 @@ parts.each do |part_attrs|
     part.position = part_attrs[:position]
   end
 end
+
+# Admin User
+User.find_or_create_by!(email_address: "admin@litflow.com") do |user|
+  user.password = "password123"
+  user.role = :admin
+end

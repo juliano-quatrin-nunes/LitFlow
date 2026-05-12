@@ -66,4 +66,29 @@
       <% end %>
     <% end %>
   <% end %>
+
+  <div class="border-t border-border mx-6 my-2"></div>
+
+  <%= ui.sidebar_section class: "px-4 py-1 mb-6" do %>
+    <%= ui.sidebar_menu do %>
+      <% if authenticated? %>
+        <div class="px-2 py-2 mb-2 text-xs font-medium text-muted-foreground border-b border-border/50 truncate">
+          <%= Current.user.email_address %>
+        </div>
+        <%= ui.sidebar_link url: session_path, data: { turbo_method: :delete } do %>
+          <div class="flex items-center gap-2.5 text-destructive hover:text-destructive">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out opacity-70"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            Sair
+          </div>
+        <% end %>
+      <% else %>
+        <%= ui.sidebar_link url: new_session_path do %>
+          <div class="flex items-center gap-2.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-in opacity-70"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
+            Entrar
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>

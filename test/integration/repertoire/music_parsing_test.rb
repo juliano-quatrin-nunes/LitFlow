@@ -2,8 +2,10 @@ require "test_helper"
 
 class Repertoire::MusicIntegrationTest < ActiveSupport::TestCase
   test "should parse content_raw into content_json on save" do
+    author = repertoire_authors(:padre_jonas)
     music = Repertoire::Music.new(
       title: "Vem e eu mostrarei",
+      author: author,
       content_raw: "E                  C#m\nVem e eu mostrarei que o meu caminho"
     )
 

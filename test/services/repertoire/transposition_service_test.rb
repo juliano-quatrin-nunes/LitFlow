@@ -4,23 +4,23 @@ class Repertoire::TranspositionServiceTest < ActiveSupport::TestCase
   setup do
     @sample_json = [
       {
-        type: "verse",
-        lines: [
+        "type" => "verse",
+        "lines" => [
           {
-            parts: [
-              { chord: "C", lyric: "Vem e eu " },
-              { chord: "G/B", lyric: "mostrarei" }
+            "parts" => [
+              { "chord" => "C", "lyric" => "Vem e eu " },
+              { "chord" => "G/B", "lyric" => "mostrarei" }
             ]
           },
           {
-            parts: [
-              { chord: "Am7", lyric: "que o meu " },
-              { chord: "F", lyric: "caminho" }
+            "parts" => [
+              { "chord" => "Am7", "lyric" => "que o meu " },
+              { "chord" => "F", "lyric" => "caminho" }
             ]
           }
         ]
       }
-    ]
+    ].map(&:with_indifferent_access)
   end
 
   test "should transpose up by two semitones (C to D)" do
@@ -31,7 +31,7 @@ class Repertoire::TranspositionServiceTest < ActiveSupport::TestCase
     # Am7 -> Bm7
     # F -> G
     expected_chords = ["D", "A/C#", "Bm7", "G"]
-    actual_chords = result[0][:lines].flat_map { |l| l[:parts].map { |p| p[:chord] } }
+    actual_chords = result[0]["lines"].flat_map { |l| l["parts"].map { |p| p["chord"] } }
 
     assert_equal expected_chords, actual_chords
   end
@@ -44,7 +44,7 @@ class Repertoire::TranspositionServiceTest < ActiveSupport::TestCase
     # Am7 -> G#m7
     # F -> E
     expected_chords = ["B", "F#/A#", "G#m7", "E"]
-    actual_chords = result[0][:lines].flat_map { |l| l[:parts].map { |p| p[:chord] } }
+    actual_chords = result[0]["lines"].flat_map { |l| l["parts"].map { |p| p["chord"] } }
 
     assert_equal expected_chords, actual_chords
   end
@@ -53,47 +53,47 @@ class Repertoire::TranspositionServiceTest < ActiveSupport::TestCase
     # In F major, we prefer Bb over A#
     input = [
       {
-        lines: [
-          { parts: [ { chord: "E", lyric: "test" } ] }
+        "lines" => [
+          { "parts" => [ { "chord" => "E", "lyric" => "test" } ] }
         ]
       }
-    ]
-    # E + 5 semitones (C to F) = A# or Bb. Target F is in FLAT_KEYS.
+    ].map(&:with_indifferent_access)
+    # E + 5 semitones (C to F) = A. 
     result = Repertoire::TranspositionService.call(input, "C", "F")
-    assert_equal "A", result[0][:lines][0][:parts][0][:chord] # Wait, E+5 = A. Bad example.
+    assert_equal "A", result[0]["lines"][0]["parts"][0]["chord"]
 
     # Let's try G to F (-2 semitones)
     # G -> F
     # B -> A (Wait, B-2 = A)
     # C -> Bb
-    input = [ { lines: [ { parts: [ { chord: "C", lyric: "test" } ] } ] } ]
+    input = [ { "lines" => [ { "parts" => [ { "chord" => "C", "lyric" => "test" } ] } ] } ].map(&:with_indifferent_access)
     result = Repertoire::TranspositionService.call(input, "G", "F")
-    assert_equal "Bb", result[0][:lines][0][:parts][0][:chord]
+    assert_equal "Bb", result[0]["lines"][0]["parts"][0]["chord"]
   end
 
   test "should handle complex suffixes" do
-    input = [ { lines: [ { parts: [ { chord: "F#m7(b5)", lyric: "test" } ] } ] } ]
+    input = [ { "lines" => [ { "parts" => [ { "chord" => "F#m7(b5)", "lyric" => "test" } ] } ] } ].map(&:with_indifferent_access)
     # F#m7(b5) + 1 semitone = Gm7(b5)
     result = Repertoire::TranspositionService.call(input, "C", "C#")
-    assert_equal "Gm7(b5)", result[0][:lines][0][:parts][0][:chord]
+    assert_equal "Gm7(b5)", result[0]["lines"][0]["parts"][0]["chord"]
   end
 
   test "should return original json if keys are the same" do
     result = Repertoire::TranspositionService.call(@sample_json, "C", "C")
-    assert_equal @sample_json, result
+    assert_equal @sample_json.as_json, result.as_json
   end
 
   test "should handle minor keys in from/to parameters" do
     # Am to Bm is +2 semitones
-    input = [ { lines: [ { parts: [ { chord: "Am", lyric: "test" } ] } ] } ]
+    input = [ { "lines" => [ { "parts" => [ { "chord" => "Am", "lyric" => "test" } ] } ] } ].map(&:with_indifferent_access)
     result = Repertoire::TranspositionService.call(input, "Am", "Bm")
-    assert_equal "Bm", result[0][:lines][0][:parts][0][:chord]
+    assert_equal "Bm", result[0]["lines"][0]["parts"][0]["chord"]
   end
 
   test "should transpose bass notes correctly" do
-    input = [ { lines: [ { parts: [ { chord: "D/F#", lyric: "test" } ] } ] } ]
+    input = [ { "lines" => [ { "parts" => [ { "chord" => "D/F#", "lyric" => "test" } ] } ] } ].map(&:with_indifferent_access)
     # D/F# + 2 semitones = E/G#
     result = Repertoire::TranspositionService.call(input, "C", "D")
-    assert_equal "E/G#", result[0][:lines][0][:parts][0][:chord]
+    assert_equal "E/G#", result[0]["lines"][0]["parts"][0]["chord"]
   end
 end

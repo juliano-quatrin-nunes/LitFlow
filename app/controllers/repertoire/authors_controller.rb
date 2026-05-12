@@ -1,5 +1,6 @@
 module Repertoire
   class AuthorsController < ApplicationController
+    allow_unauthenticated_access only: %i[ index ]
     def index
       @authors = Repertoire::Author.all.order(:name)
       if params[:q].present?
