@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_140402) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_140752) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -83,6 +83,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_140402) do
     t.string "youtube_url"
     t.index ["author_id"], name: "index_repertoire_musics_on_author_id"
     t.index ["slug"], name: "index_repertoire_musics_on_slug", unique: true
+  end
+
+  create_table "saved_musics", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "music_id", null: false
+    t.string "preferred_key"
+    t.text "remarks"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["music_id"], name: "index_saved_musics_on_music_id"
+    t.index ["user_id"], name: "index_saved_musics_on_user_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -250,6 +261,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_140402) do
   add_foreign_key "repertoire_music_mass_parts", "repertoire_mass_parts", column: "mass_part_id"
   add_foreign_key "repertoire_music_mass_parts", "repertoire_musics", column: "music_id"
   add_foreign_key "repertoire_musics", "repertoire_authors", column: "author_id"
+  add_foreign_key "saved_musics", "repertoire_musics", column: "music_id"
+  add_foreign_key "saved_musics", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

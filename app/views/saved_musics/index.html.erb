@@ -1,0 +1,46 @@
+<%= ui.header class: "mb-8" do %>
+  <div class="flex flex-col gap-1">
+    <%= ui.breadcrumbs do %>
+      <%= ui.breadcrumb "Meu Espaço" %>
+      <%= ui.breadcrumb "Meu Repertório" %>
+    <% end %>
+    <h1 class="font-bold text-3xl tracking-tight text-foreground">Meu Repertório</h1>
+  </div>
+<% end %>
+
+<% if @saved_musics.any? %>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <% @saved_musics.each do |saved| %>
+      <%= link_to repertoire_music_by_author_show_path(saved.music.author, saved.music), class: "group" do %>
+        <%= ui.card class: "p-5 hover:border-primary/50 transition-all hover:shadow-md h-full flex flex-col" do %>
+          <div class="flex justify-between items-start mb-2">
+            <h2 class="font-bold text-lg group-hover:text-primary transition-colors leading-tight"><%= saved.music.title %></h2>
+            <%= ui.badge saved.preferred_key, variant: :outline, class: "bg-primary/5 text-primary border-primary/20" %>
+          </div>
+          <p class="text-sm text-muted-foreground mb-4"><%= saved.music.author_name %></p>
+          
+          <% if saved.remarks.present? %>
+            <div class="mt-auto pt-3 border-t border-border/50">
+              <p class="text-xs text-muted-foreground line-clamp-2 italic italic">
+                "<%= saved.remarks %>"
+              </p>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <%= ui.card class: "p-12 text-center" do %>
+    <div class="flex flex-col items-center gap-4">
+      <div class="p-4 rounded-full bg-muted">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music-2 opacity-20"><circle cx="8" cy="18" r="4"/><path d="M12 18V2l7 2"/></svg>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold">Seu repertório está vazio</h2>
+        <p class="text-muted-foreground mt-1">Explore a biblioteca e salve suas músicas favoritas aqui.</p>
+      </div>
+      <%= ui.btn "Explorar Biblioteca", url: repertoire_musics_path, variant: :primary, class: "mt-4" %>
+    </div>
+  <% end %>
+<% end %>

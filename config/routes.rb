@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     resources :invitations, only: [ :index, :create, :destroy ]
   end
 
+  resources :saved_musics, only: [ :index, :create, :update, :destroy ]
+
   namespace :repertoire do
     resources :authors, only: [ :index, :create ]
     resources :musics, only: [ :index, :new, :create ]

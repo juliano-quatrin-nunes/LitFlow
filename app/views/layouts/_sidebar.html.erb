@@ -31,13 +31,12 @@
   <%= ui.sidebar_section class: "px-4 py-1" do %>
     <%= ui.sidebar_title "Meu Espaço", class: "text-[10px] uppercase tracking-[0.2em] px-2 mb-1" %>
     <%= ui.sidebar_menu do %>
-      <%= ui.sidebar_link disabled: true do %>
+      <%= ui.sidebar_link url: authenticated? ? saved_musics_path : new_session_path do %>
         <div class="flex items-center justify-between w-full">
           <div class="flex items-center gap-2.5">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-library opacity-70"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg>
-            Repertórios
+            Meu Repertório
           </div>
-          <%= ui.badge "Em breve", size: :xs, variant: :default, class: "opacity-60 font-normal" %>
         </div>
       <% end %>
     <% end %>
