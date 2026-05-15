@@ -86,7 +86,8 @@
       <% if @musics.any? %>
         <div class="flex flex-col gap-4">
           <% @musics.each do |music| %>
-            <%= render partial: "repertoire/musics/music_card", locals: { music: music } %>
+            <% saved_music = @user_saved_musics[music.id] %>
+            <%= render partial: "repertoire/musics/music_card", locals: { music: music, preferred_key: saved_music&.preferred_key, remarks: saved_music&.remarks, show_badge: false } %>
           <% end %>
         </div>
       <% else %>

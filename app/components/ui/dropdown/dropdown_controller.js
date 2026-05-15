@@ -5,11 +5,23 @@ import { stimulus } from '~/init'
 
 export default class DropdownController extends Controller {
   static targets = ['menu', 'autofocus']
-  static values = { open: { type: Boolean, default: false } }
+  static values = { 
+    open: { type: Boolean, default: false },
+    placement: { type: String, default: 'bottom-start' },
+    trigger: { type: String, default: 'click' }
+  }
 
   connect () {
     useClickOutside(this, { element: this.element })
-    this.element.addEventListener('click', this.#handleClick)
+    
+    if (this.triggerValue === 'hover') {
+      this.element.addEventListener('mouseenter', this.show.bind(this))
+      this.element.addEventListener('mouseleave', this.hide.bind(this))
+      this.element.addEventListener('click', this.#handleClick)
+    } else {
+      this.element.addEventListener('click', this.#handleClick)
+    }
+    
     document.addEventListener('turbo:morph', this.#handleMorph)
   }
 
@@ -81,7 +93,7 @@ export default class DropdownController extends Controller {
 
   async #updatePosition () {
     const { x, y } = await computePosition(this.element, this.menuTarget, {
-      placement: 'bottom-start',
+      placement: this.placementValue,
       middleware: [
         offset(5),
         flip(),

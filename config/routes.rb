@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   end
 
   resources :saved_musics, only: [ :index, :create, :update, :destroy ]
+  resources :setlists
+  resources :setlist_items, only: [ :create, :update, :destroy ]
 
   namespace :repertoire do
     resources :authors, only: [ :index, :create ]

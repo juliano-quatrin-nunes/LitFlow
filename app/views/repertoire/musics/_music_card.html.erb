@@ -5,7 +5,7 @@
         <div class="flex flex-col gap-1">
           <div class="flex items-center gap-2">
             <h2 class="text-xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors"><%= music.title %></h2>
-            <% if local_assigns[:preferred_key].present? %>
+            <% if local_assigns[:preferred_key].present? && local_assigns.fetch(:show_badge, true) %>
               <%= ui.badge preferred_key, variant: :outline, class: "bg-primary/5 text-primary border-primary/20 shrink-0" %>
             <% end %>
           </div>

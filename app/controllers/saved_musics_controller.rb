@@ -26,8 +26,9 @@ class SavedMusicsController < ApplicationController
 
   def destroy
     @saved_music = Current.user.saved_musics.find(params[:id])
+    music = @saved_music.music
     @saved_music.destroy
-    redirect_to repertoire_musics_path, notice: "Música removida do seu repertório."
+    redirect_back_or_to repertoire_music_by_author_show_path(music.author, music), notice: "Música removida do seu repertório."
   end
 
   private

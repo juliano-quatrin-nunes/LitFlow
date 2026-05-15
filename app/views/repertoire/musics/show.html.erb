@@ -22,19 +22,50 @@
 
     <div class="flex flex-wrap items-center gap-3">
       <% if authenticated? %>
-        <% if @saved_music %>
-          <%= ui.btn variant: :ghost, size: :sm, class: "text-muted-foreground", disabled: true do %>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="lucide lucide-heart mr-1 text-primary"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-            No seu Repertório
+        <% if @saved_music && @saved_music.preferred_key == @current_key %>
+          <%= form_with model: @saved_music, url: saved_music_path(@saved_music), method: :delete, data: { turbo_frame: :_top } do |f| %>
+            <%= ui.btn variant: :outline, size: :sm, type: :submit, class: "text-primary border-primary hover:bg-primary/10" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="lucide lucide-heart mr-1"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+              Salvo
+            <% end %>
           <% end %>
         <% else %>
-          <%= form_with model: SavedMusic.new, url: saved_musics_path do |f| %>
+          <%= form_with model: SavedMusic.new, url: saved_musics_path, data: { turbo_frame: :_top } do |f| %>
             <%= f.hidden_field :music_id, value: @music.id, name: :music_id %>
             <%= f.hidden_field :preferred_key, value: @current_key, name: "saved_music[preferred_key]" %>
             <%= ui.btn variant: :outline, size: :sm, type: :submit do %>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart mr-1"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-              Salvar
+              <%= @saved_music ? "Atualizar Tom" : "Salvar" %>
             <% end %>
+          <% end %>
+        <% end %>
+
+
+
+        <%= ui.dropdown do %>
+          <%= ui.dropdown_trigger do %>
+            <%= ui.btn variant: :outline, size: :sm do %>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus mr-1"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              Adicionar a roteiro
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down ml-1 opacity-50"><path d="m6 9 6 6 6-6"/></svg>
+            <% end %>
+          <% end %>
+          
+          <%= ui.dropdown_menu class: "w-56" do %>
+            <% Current.user.setlists.order(date: :desc).each do |setlist| %>
+              <li class="dropdown__item">
+                <%= form_with model: SetlistItem.new, url: setlist_items_path, data: { turbo_frame: :_top } do |f| %>
+                  <%= f.hidden_field :music_id, value: @music.id %>
+                  <%= f.hidden_field :key, value: @current_key %>
+                  <%= f.hidden_field :setlist_id, value: setlist.id %>
+                  <button type="submit" class="dropdown__link">
+                    <%= setlist.name %>
+                  </button>
+                <% end %>
+              </li>
+            <% end %>
+            <%= ui.dropdown_divider if Current.user.setlists.any? %>
+            <%= ui.dropdown_link "Criar Novo...", url: new_setlist_path(music_id: @music.id, key: @current_key), data: { turbo_frame: :_top } %>
           <% end %>
         <% end %>
 
@@ -47,6 +78,7 @@
         <% end %>
 
         <%= ui.dropdown_menu class: "w-56" do %>
+
           <%= ui.dropdown_link "Editar Categorias", url: repertoire_music_by_author_edit_liturgical_categories_path(@music.author, @music), data: { turbo_frame: "modal" } %>
 
           <%= ui.dropdown_divider %>
@@ -98,10 +130,11 @@
 
           <%= ui.dropdown_divider %>
           <%= ui.dropdown_link "Editar Música", url: repertoire_music_by_author_edit_path(@music.author, @music), data: { turbo_frame: :_top } %>
-          <%= ui.dropdown_link "Excluir Música", 
+          <%= ui.dropdown_button "Excluir Música", 
                               url: repertoire_music_by_author_destroy_path(@music.author, @music), 
                               class: "text-destructive hover:bg-destructive/10",
-                              data: { turbo_method: :delete, turbo_confirm: "Tem certeza?" } %>
+                              method: :delete,
+                              data: { turbo_confirm: "Tem certeza que deseja excluir esta música?" } %>
         <% end %>
       <% end %>
     <% end %>

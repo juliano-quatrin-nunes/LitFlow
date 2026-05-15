@@ -24,6 +24,8 @@ module Repertoire
       if params[:part].present?
         @musics = @musics.joins(:mass_parts).where(repertoire_mass_parts: { slug: params[:part] })
       end
+
+      @user_saved_musics = authenticated? ? Current.user.saved_musics.index_by(&:music_id) : {}
     end
 
     def show

@@ -1,11 +1,11 @@
-class Ui::Dropdown::Component < ApplicationComponent
+class Ui::Dropdown::SubComponent < ApplicationComponent
   def initialize(**options)
     super
     @options = options
   end
 
   erb_template <<~ERB
-    <%= content_tag :div, classes: classes, **attrs do %>
+    <%= content_tag :div, class: classes, **attrs do %>
       <%= content %>
     <% end %>
   ERB
@@ -13,9 +13,10 @@ class Ui::Dropdown::Component < ApplicationComponent
   private
 
   def attrs
-    data_attributes = { 
+    data_attributes = {
       controller: "dropdown",
-      dropdown_placement_value: @options.delete(:placement) || "bottom-start"
+      dropdown_placement_value: @options.delete(:placement) || "right-start",
+      dropdown_trigger_value: @options.delete(:trigger) || "hover"
     }.deep_merge(@options.fetch(:data, {}))
 
     @options.merge(data: data_attributes)
@@ -23,7 +24,7 @@ class Ui::Dropdown::Component < ApplicationComponent
 
   def classes
     class_names(
-      "dropdown",
+      "dropdown dropdown-sub w-full",
       @options.delete(:class)
     )
   end
