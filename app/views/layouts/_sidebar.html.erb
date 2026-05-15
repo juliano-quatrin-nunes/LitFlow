@@ -1,14 +1,11 @@
-<%= ui.sidebar class: "hidden md:flex flex-col w-64 border-r h-screen sticky top-0 bg-sidebar overflow-y-auto", data: { controller: "sidebar", sidebar_target: "menu" } do %>
-  <div class="px-6 pt-6 pb-2">
-    <%= link_to root_path, class: "flex items-center gap-2.5 font-bold text-xl tracking-tight" do %>
-      <span class="bg-primary text-primary-foreground p-1.5 rounded-lg shadow-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-      </span>
-      <span class="text-secondary tracking-tight">Litflow</span>
+<%= ui.sidebar class: "hidden md:flex flex-col gap-5 w-64 border-r h-screen sticky top-0 bg-sidebar overflow-y-auto pr-0", data: { controller: "sidebar", sidebar_target: "menu" } do %>
+  <div class="px-6 pt-6">
+    <%= link_to root_path, class: "inline-block" do %>
+      <%= image_tag "liflow-logo.png", alt: "Litflow", class: "h-14 w-auto" %>
     <% end %>
   </div>
 
-  <div class="border-b border-border mx-6 mb-3"></div>
+  <div class="border-b border-border mx-6"></div>
 
   <%= ui.sidebar_section class: "px-4 py-1" do %>
     <%= ui.sidebar_title "Biblioteca", class: "text-[10px] uppercase tracking-[0.2em] px-2 mb-1" %>
@@ -50,7 +47,7 @@
     <% end %>
   <% end %>
 
-  <%= ui.sidebar_section class: "px-4 py-1 mt-auto mb-4" do %>
+  <%= ui.sidebar_section class: "px-4 py-1 mt-auto" do %>
     <%= ui.sidebar_title "Gestão", class: "text-[10px] uppercase tracking-[0.2em] px-2 mb-1" %>
     <%= ui.sidebar_menu do %>
       <% if authenticated? && Current.user.admin? %>
@@ -82,14 +79,11 @@
     <% end %>
   <% end %>
 
-  <div class="border-t border-border mx-6 my-2"></div>
+  <div class="border-t border-border mx-6"></div>
 
-  <%= ui.sidebar_section class: "px-4 py-1 mb-6" do %>
+  <%= ui.sidebar_section class: "px-4 py-1 mb-6 flex flex-col gap-5" do %>
     <%= ui.sidebar_menu do %>
       <% if authenticated? %>
-        <div class="px-2 py-2 mb-2 text-xs font-medium text-muted-foreground border-b border-border/50 truncate">
-          <%= Current.user.email_address %>
-        </div>
         <%= ui.sidebar_link url: session_path, data: { turbo_method: :delete } do %>
           <div class="flex items-center gap-2.5 text-destructive hover:text-destructive">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out opacity-70"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>

@@ -1,10 +1,7 @@
 <div class="mx-auto max-w-sm w-full py-12">
   <div class="text-center mb-10">
-    <%= link_to root_path, class: "inline-flex items-center gap-2.5 font-bold text-3xl tracking-tight" do %>
-      <span class="bg-primary text-primary-foreground p-2 rounded-xl shadow-md">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-      </span>
-      <span class="text-secondary tracking-tight">Litflow</span>
+    <%= link_to root_path, class: "inline-block" do %>
+      <%= image_tag "liflow-logo.png", alt: "Litflow", class: "h-24 w-auto mx-auto" %>
     <% end %>
     <p class="text-muted-foreground mt-3">Acesse seu repertório e setlists</p>
   </div>

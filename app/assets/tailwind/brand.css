@@ -8,34 +8,40 @@
   --radius-base: theme(--radius-md);
   --radius-btn: var(--radius-base);
   --radius-field: theme(--radius-md);
-  --background: #fdfffa;
-  --foreground: #171717; /* Neutral almost black */
+  /* Very light warm white — page background. Lighter than the sidebar tint. */
+  --background: oklch(1 0.006 47.824); /* ~#FCFBF7 */
+  --foreground: oklch(
+    0.18 0.015 60
+  ); /* ~#1B1612 — warm near-black, harmonizes with brown/gold */
   --overlay: rgba(0, 0, 0, 0.5);
-  --card: #fdfffa;
+  /* Cards/inputs/popovers stay near-white so they lift off the cream background. */
+  --card: #ffffff;
   --card-foreground: var(--foreground);
-  --popover: #fdfffa;
+  --popover: #ffffff;
   --popover-foreground: var(--foreground);
 
   /* User Provided Palette */
   /* #483F74 (Deep Purple) -> Primary */
   --primary: oklch(0.35 0.08 285);
-  --primary-foreground: #fdfffa;
+  --primary-foreground: #fdfffc;
 
   /* #C99542 (Gold) -> Accent — lifted lightness for contrast on dark surfaces */
   --accent: oklch(0.82 0.14 80);
   --accent-foreground: oklch(0.25 0.05 62);
 
-  /* #452400 (Deep Brown) -> Secondary #6A381F - teste porcelana: #FDFFFA*/
+  /* #6A381F (not so Deep Brown) -> Secondary */
   --secondary: oklch(0.3987 0.0802 46.05);
-  --secondary-foreground: #fdfffa;
+  --secondary-foreground: #fdfffc;
 
-  /* Sidebar Background - Very subtle tint of the brown/gold for a neutral parchment feel */
-  --sidebar: oklch(0.98 0.01 75);
+  /* Sidebar Background — same hue family as page background, slightly darker for hierarchy. */
+  --sidebar: oklch(0.97 0.005 80);
 
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.55 0 0);
   --border: oklch(0.92 0 0);
   --input: oklch(0.92 0 0);
+  --input-focus: oklch(from var(--primary) l c h / 50%);
+  --input-ring: oklch(from var(--primary) l c h / 18%);
 
   /* #E2FCEF (Mint) -> Success */
   --success: oklch(0.95 0.03 160);
@@ -46,7 +52,7 @@
   --info-foreground: oklch(0.35 0.08 285);
 
   --destructive: oklch(0.6 0.18 25);
-  --destructive-foreground: #fdfffa;
+  --destructive-foreground: #fdfffc;
 }
 
 .dark {
