@@ -10,8 +10,13 @@ Rails.application.routes.draw do
   end
 
   resources :saved_musics, only: [ :index, :create, :update, :destroy ]
+  get "p/setlists/:uid", to: "setlists#public_show", as: :public_setlist
   resources :setlists
-  resources :setlist_items, only: [ :create, :update, :destroy ]
+  resources :setlist_items, only: [ :new, :create, :update, :destroy ] do
+    collection do
+      patch :reorder
+    end
+  end
 
   namespace :repertoire do
     resources :authors, only: [ :index, :create ]

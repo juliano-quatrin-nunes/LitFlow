@@ -1,4 +1,5 @@
 class SetlistsController < ApplicationController
+  allow_unauthenticated_access only: :public_show
   before_action :set_setlist, only: %i[ show edit update destroy ]
 
   def index
@@ -6,6 +7,10 @@ class SetlistsController < ApplicationController
   end
 
   def show
+  end
+
+  def public_show
+    @setlist = Setlist.find_by!(uid: params[:uid])
   end
 
   def new

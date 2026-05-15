@@ -1,39 +1,24 @@
 import { Controller } from '@hotwired/stimulus'
+import { showToast } from 'toast'
 
 export default class ClipboardController extends Controller {
   static values = {
     content: String,
     sourceId: String,
-    successText: { type: String, default: 'Copied!' },
-    timeout: { type: Number, default: 2000 }
+    successText: { type: String, default: 'Copiado!' }
   }
 
-  connect () {
-    this.originalText = this.#hasTooltip
-      ? this.element.dataset.tooltipContentValue
-      : this.element.textContent
-  }
-
-  async copy () {
+  async copy (event) {
+    event?.preventDefault?.()
     const text = this.#getContent()
-    await navigator.clipboard.writeText(text)
 
-    if (!this.#hasTooltip) {
-      this.element.textContent = this.successTextValue
+    try {
+      await navigator.clipboard.writeText(text)
+      showToast(this.successTextValue, { variant: 'success' })
+    } catch (err) {
+      showToast('Não foi possível copiar.', { variant: 'error' })
+      throw err
     }
-
-    this.dispatch('change', { detail: { content: this.successTextValue } })
-
-    setTimeout(() => {
-      if (!this.#hasTooltip) {
-        this.element.textContent = this.originalText
-      }
-      this.dispatch('change', { detail: { content: this.originalText } })
-    }, this.timeoutValue)
-  }
-
-  get #hasTooltip () {
-    return this.element.dataset.controller?.includes('tooltip')
   }
 
   #getContent () {
@@ -44,4 +29,3 @@ export default class ClipboardController extends Controller {
     return this.contentValue
   }
 }
-

@@ -28,29 +28,113 @@
         </div>
       </div>
       
-      <div class="flex items-center gap-2">
-        <%= link_to edit_setlist_path(@setlist), class: "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
-          Editar
+      <div class="flex flex-wrap items-center gap-3">
+        <textarea id="public-setlist-url" class="hidden"><%= public_setlist_url(uid: @setlist.uid) %></textarea>
+        <%= ui.btn variant: :outline, size: :sm,
+                   data: {
+                     controller: "clipboard",
+                     action: "clipboard#copy",
+                     clipboard_source_id_value: "public-setlist-url",
+                     clipboard_success_text_value: "Link copiado!"
+                   } do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link mr-1"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Compartilhar
         <% end %>
-        
-        <%= button_to setlist_path(@setlist), method: :delete, data: { turbo_confirm: "Tem certeza que deseja excluir este roteiro?" }, class: "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-destructive/20 bg-destructive/10 text-destructive shadow-sm hover:bg-destructive/20 h-9 px-4 py-2 rounded-md" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-          Excluir
+
+        <%= ui.dropdown do %>
+          <%= ui.dropdown_trigger do %>
+            <%= ui.btn variant: :outline, size: :sm do %>
+              Ações
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down ml-1 opacity-50"><path d="m6 9 6 6 6-6"/></svg>
+            <% end %>
+          <% end %>
+
+          <%= ui.dropdown_menu class: "w-56" do %>
+            <%= ui.dropdown_link "Editar Roteiro", url: edit_setlist_path(@setlist), data: { turbo_frame: :_top } %>
+            <%= ui.dropdown_link "Ver Link Público", url: public_setlist_path(uid: @setlist.uid), data: { turbo_frame: :_top } %>
+            <%= ui.dropdown_divider %>
+            <%= ui.dropdown_button "Excluir Roteiro",
+                                url: setlist_path(@setlist),
+                                class: "text-destructive hover:bg-destructive/10",
+                                method: :delete,
+                                data: { turbo_confirm: "Tem certeza que deseja excluir este roteiro?" } %>
+          <% end %>
         <% end %>
       </div>
     </div>
   </div>
 <% end %>
 
-<% if @setlist.items.any? %>
-  <div class="flex flex-col gap-3 mt-8">
-    <% @setlist.items.order(:position).each do |item| %>
-      <%= render partial: "repertoire/musics/music_card", locals: { music: item.music, preferred_key: item.key } %>
+<% if @setlist.missa? %>
+  <div class="flex flex-col gap-6 mt-8">
+    <% @setlist.missa_slots.each do |part, items| %>
+      <section class="flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-border pb-1">
+          <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground"><%= part.name %></h2>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-muted-foreground"><%= items.size %> música<%= "s" if items.size != 1 %></span>
+            <%= link_to new_setlist_item_path(setlist_id: @setlist.id, mass_part_id: part.id, part: part.slug),
+                        data: { turbo_frame: "modal" },
+                        class: "text-xs font-medium text-secondary hover:text-secondary-hover" do %>
+              + Adicionar
+            <% end %>
+          </div>
+        </div>
+
+        <% if items.any? %>
+          <div data-controller="sortable"
+               data-sortable-url-value="<%= reorder_setlist_items_path %>"
+               class="flex flex-col gap-3">
+            <% items.each do |item| %>
+              <%= render partial: "setlists/item", locals: { item: item } %>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-sm text-muted-foreground italic py-2">Sem músicas neste slot.</p>
+        <% end %>
+      </section>
+    <% end %>
+
+    <% unassigned = @setlist.items.includes(:music).where(mass_part_id: nil).order(:position) %>
+    <% if unassigned.any? %>
+      <section class="flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-border pb-1">
+          <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Sem Categoria</h2>
+          <span class="text-xs text-muted-foreground"><%= unassigned.size %> música<%= "s" if unassigned.size != 1 %></span>
+        </div>
+        <div data-controller="sortable"
+             data-sortable-url-value="<%= reorder_setlist_items_path %>"
+             class="flex flex-col gap-3">
+          <% unassigned.each do |item| %>
+            <%= render partial: "setlists/item", locals: { item: item } %>
+          <% end %>
+        </div>
+      </section>
     <% end %>
   </div>
 <% else %>
-  <%= ui.card class: "p-8 text-center mt-8" do %>
-    <p class="text-muted-foreground">Músicas serão adicionadas aqui em breve.</p>
-  <% end %>
+  <div class="mt-8">
+    <div class="flex justify-end mb-4">
+      <%= link_to new_setlist_item_path(setlist_id: @setlist.id),
+                  data: { turbo_frame: "modal" },
+                  class: "text-sm font-medium text-secondary hover:text-secondary-hover inline-flex items-center gap-1" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        Adicionar Música
+      <% end %>
+    </div>
+
+    <% if @setlist.items.any? %>
+      <div data-controller="sortable"
+           data-sortable-url-value="<%= reorder_setlist_items_path %>"
+           class="flex flex-col gap-3">
+        <% @setlist.items.includes(:music).order(:position).each do |item| %>
+          <%= render partial: "setlists/item", locals: { item: item } %>
+        <% end %>
+      </div>
+    <% else %>
+      <%= ui.card class: "p-8 text-center" do %>
+        <p class="text-muted-foreground">Músicas serão adicionadas aqui em breve.</p>
+      <% end %>
+    <% end %>
+  </div>
 <% end %>

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @source "../../../app";
+@source inline("w-sm w-md w-lg w-xl w-2xl w-3xl w-4xl w-5xl w-6xl");
 
 @import "./brand.css";
 @import "./theme.css";

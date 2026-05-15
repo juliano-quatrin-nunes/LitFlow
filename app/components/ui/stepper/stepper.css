@@ -19,7 +19,7 @@
   }
 
   .stepper__item-completed:not(:last-child)::after {
-    @apply bg-primary;
+    @apply bg-secondary;
   }
 
   .stepper__indicator {
@@ -32,11 +32,11 @@
   }
 
   .stepper__item-current .stepper__indicator {
-    @apply bg-primary border-primary text-primary-foreground;
+    @apply bg-secondary border-secondary text-secondary-foreground;
   }
 
   .stepper__item-completed .stepper__indicator {
-    @apply bg-primary border-primary text-primary-foreground;
+    @apply bg-secondary border-secondary text-secondary-foreground;
   }
 
   .stepper__icon {

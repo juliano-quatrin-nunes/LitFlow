@@ -1,0 +1,16 @@
+<%= form_with model: SetlistItem.new, url: setlist_items_path, data: { turbo_frame: :_top }, class: "block group h-full" do |f| %>
+  <%= f.hidden_field :setlist_id, value: setlist.id %>
+  <%= f.hidden_field :music_id, value: music.id %>
+  <%= f.hidden_field :mass_part_id, value: local_assigns[:mass_part]&.id %>
+  <%= f.hidden_field :key, value: music.original_key %>
+
+  <button type="submit" class="w-full text-left cursor-pointer">
+    <%= ui.card class: "hover:border-secondary/40 transition-all shadow-sm group-hover:shadow-md h-full flex flex-col" do %>
+      <%= render partial: "repertoire/musics/music_card_body", locals: {
+        music: music,
+        preferred_key: local_assigns[:preferred_key],
+        show_badge: local_assigns.fetch(:show_badge, true)
+      } %>
+    <% end %>
+  </button>
+<% end %>

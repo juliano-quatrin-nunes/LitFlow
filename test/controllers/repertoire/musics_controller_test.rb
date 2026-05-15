@@ -10,14 +10,14 @@ class Repertoire::MusicsControllerTest < ActionDispatch::IntegrationTest
     music = repertoire_musics(:one)
     get repertoire_music_by_author_url(music.author, music)
     assert_response :success
-    assert_select ".text-primary", text: "E"
+    assert_select ".text-accent-foreground", text: "E"
   end
 
   test "should show transposed music" do
     music = repertoire_musics(:one)
     get repertoire_music_by_author_url(music.author, music, key: "G")
     assert_response :success
-    assert_select ".text-primary", text: "G"
+    assert_select ".text-accent-foreground", text: "G"
     assert_select "span", text: "G" # The current key in KeyMutator
   end
 
@@ -100,6 +100,34 @@ class Repertoire::MusicsControllerTest < ActionDispatch::IntegrationTest
     get repertoire_musics_url(q: "Espírito")
     assert_response :success
     assert_select "h2", text: music.title
+  end
+
+  test "library scope mine returns only musics saved by the current user" do
+    user = users(:user)
+    sign_in_as user
+    mine = repertoire_musics(:one)
+    other = repertoire_musics(:two)
+    SavedMusic.create!(user: user, music: mine)
+
+    get repertoire_musics_url(library: "mine")
+
+    assert_response :success
+    assert_select "h2", text: mine.title
+    assert_select "h2", { text: other.title, count: 0 }
+  end
+
+  test "library scope all returns every music (default behavior)" do
+    user = users(:user)
+    sign_in_as user
+    mine = repertoire_musics(:one)
+    other = repertoire_musics(:two)
+    SavedMusic.create!(user: user, music: mine)
+
+    get repertoire_musics_url(library: "all")
+
+    assert_response :success
+    assert_select "h2", text: mine.title
+    assert_select "h2", text: other.title
   end
 
   test "should show liturgical context on music page" do

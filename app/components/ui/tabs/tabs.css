@@ -28,7 +28,7 @@
   }
 
   .tabs-underline .tabs__link-active {
-    @apply bg-transparent shadow-none text-primary border-primary;
-    @apply hover:text-primary hover:border-primary;
+    @apply bg-transparent shadow-none text-secondary border-secondary;
+    @apply hover:text-secondary hover:border-secondary;
   }
 }

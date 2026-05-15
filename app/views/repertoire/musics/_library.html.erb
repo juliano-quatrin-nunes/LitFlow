@@ -1,0 +1,182 @@
+<%#
+  Shared music library: search + season/part/scope filters + cards.
+
+  Locals:
+    musics             - relation
+    seasons            - LiturgicalSeason.all
+    parts              - MassPart.all
+    user_saved_musics  - { music_id => SavedMusic } (default: {})
+    library_scope      - "all" | "mine" (default: "all")
+    library_path       - ->(extra_params = {}) { String } -- builds URLs for filter links
+    frame_id           - turbo frame wrapping the filtered list
+    mode               - :browse (default) or :select
+    setlist            - required when mode == :select
+    mass_part          - optional, only used in :select
+%>
+<%
+  user_saved_musics ||= {}
+  library_scope     ||= "all"
+  mode              ||= :browse
+  setlist             = local_assigns[:setlist]
+  mass_part           = local_assigns[:mass_part]
+  applied_filters     = local_assigns[:applied_filters] || params.permit(:q, :season, :part, :library).to_h.symbolize_keys
+  advance_history     = local_assigns.fetch(:advance_history, true)
+
+  turbo_data = { turbo_frame: frame_id }
+  turbo_data[:turbo_action] = "advance" if advance_history
+
+  current_q       = applied_filters[:q].presence
+  current_season  = applied_filters[:season].presence
+  current_part    = applied_filters[:part].presence
+  library_authenticated = authenticated?
+  current_library = library_authenticated ? library_scope : "all"
+
+  current_filters = { q: current_q, season: current_season, part: current_part, library: current_library }.compact
+%>
+
+<%= turbo_frame_tag frame_id, target: "_top" do %>
+  <div class="flex flex-wrap items-center gap-3 mb-8 bg-muted/30 p-4 rounded-xl border border-border">
+    <div class="flex-grow min-w-[220px] basis-[220px]">
+      <%= form_with url: library_path.call(current_filters.except(:q)),
+                    method: :get,
+                    class: "relative",
+                    data: turbo_data.merge(controller: "search") do |f| %>
+        <%= f.text_field :q,
+                        label: false,
+                        group_html: { class: "relative" },
+                        value: current_q,
+                        placeholder: "Buscar por título, autor ou letra...",
+                        class: "w-full pl-10 pr-4 py-2 bg-card border-border rounded-lg text-sm focus:ring-primary focus:border-primary transition-all",
+                        autocomplete: "off",
+                        data: {
+                          search_target: "input",
+                          action: "input->search#search"
+                        } do %>
+          <div class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+        <% end %>
+        <%= f.hidden_field :season,  value: current_season  if current_season %>
+        <%= f.hidden_field :part,    value: current_part    if current_part %>
+        <%= f.hidden_field :library, value: current_library if current_library != "all" %>
+      <% end %>
+    </div>
+
+    <div class="flex items-center gap-2 flex-wrap">
+      <% if library_authenticated %>
+        <div class="inline-flex items-center bg-card border border-border rounded-lg p-0.5 gap-0.5">
+          <% [ [ "all", "Todas" ], [ "mine", "Minha Biblioteca" ] ].each do |value, label| %>
+            <% active = current_library == value %>
+            <%= link_to label,
+                        library_path.call(current_filters.merge(library: value).compact),
+                        data: turbo_data,
+                        class: cn(
+                          "px-3 py-1.5 text-xs font-medium rounded-md transition-colors",
+                          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary-hover" => active,
+                          "text-muted-foreground hover:text-foreground hover:bg-secondary/12" => !active
+                        ) %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%
+        filter_pill_base = "inline-flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-md transition-colors"
+        active_pill   = "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary-hover"
+        inactive_pill = "bg-card border border-border text-foreground hover:bg-secondary/12"
+      %>
+
+      <%= ui.dropdown do %>
+        <%= ui.dropdown_trigger do %>
+          <button type="button" class="<%= cn(filter_pill_base, current_season ? active_pill : inactive_pill) %>">
+            Tempo: <%= current_season ? seasons.find { |s| s.slug == current_season }&.name : "Todos" %>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down opacity-70"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        <% end %>
+        <%= ui.dropdown_menu class: "w-56" do %>
+          <%= ui.dropdown_link "Todos os Tempos",
+                               url: library_path.call(current_filters.except(:season)),
+                               active: current_season.blank?,
+                               data: turbo_data %>
+          <%= ui.dropdown_divider %>
+          <% seasons.each do |season| %>
+            <%= ui.dropdown_link season.name,
+                                 url: library_path.call(current_filters.merge(season: season.slug)),
+                                 active: current_season == season.slug,
+                                 data: turbo_data %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= ui.dropdown do %>
+        <%= ui.dropdown_trigger do %>
+          <button type="button" class="<%= cn(filter_pill_base, current_part ? active_pill : inactive_pill) %>">
+            Parte: <%= current_part ? parts.find { |p| p.slug == current_part }&.name : "Todas" %>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down opacity-70"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        <% end %>
+        <%= ui.dropdown_menu class: "w-56" do %>
+          <%= ui.dropdown_link "Todas as Partes",
+                               url: library_path.call(current_filters.except(:part)),
+                               active: current_part.blank?,
+                               data: turbo_data %>
+          <%= ui.dropdown_divider %>
+          <% parts.each do |part| %>
+            <%= ui.dropdown_link part.name,
+                                 url: library_path.call(current_filters.merge(part: part.slug)),
+                                 active: current_part == part.slug,
+                                 data: turbo_data %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <% if current_q || current_season || current_part || current_library == "mine" %>
+        <%= link_to library_path.call({}),
+                    data: turbo_data,
+                    class: "inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/12 transition-colors" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x opacity-70"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          Limpar
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div id="musics_list">
+    <% if musics.any? %>
+      <div class="flex flex-col gap-4">
+        <% musics.each do |music| %>
+          <% saved_music = user_saved_musics[music.id] %>
+          <% if mode == :select %>
+            <%= render partial: "repertoire/musics/music_card_selector", locals: {
+              music: music,
+              setlist: setlist,
+              mass_part: mass_part,
+              preferred_key: saved_music&.preferred_key,
+              show_badge: false
+            } %>
+          <% else %>
+            <%= render partial: "repertoire/musics/music_card", locals: {
+              music: music,
+              preferred_key: saved_music&.preferred_key,
+              remarks: saved_music&.remarks,
+              show_badge: false
+            } %>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <%= ui.card class: "bg-muted/30 border-dashed" do %>
+        <%= ui.empty do %>
+          <div class="bg-muted p-4 rounded-full mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music text-muted-foreground"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Nenhuma música encontrada</h3>
+          <p class="text-muted-foreground mb-6 max-w-sm">Tente ajustar seus filtros ou busca.</p>
+          <%= link_to "Limpar filtros",
+                      library_path.call({}),
+                      data: turbo_data,
+                      class: "btn btn-default btn-md" %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

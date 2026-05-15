@@ -1,0 +1,25 @@
+<div data-sortable-id="<%= item.id %>" class="flex items-stretch gap-2" id="<%= dom_id(item) %>">
+  <button type="button"
+          class="sortable-handle shrink-0 self-stretch w-8 flex items-center justify-center text-muted-foreground/40 hover:text-muted-foreground cursor-grab active:cursor-grabbing"
+          aria-label="Reordenar">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grip-vertical">
+      <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
+      <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
+    </svg>
+  </button>
+
+  <div class="flex-1 min-w-0">
+    <%= render partial: "repertoire/musics/music_card", locals: { music: item.music, preferred_key: item.key } %>
+  </div>
+
+  <div class="shrink-0 flex items-center justify-center pl-1">
+    <%= button_to setlist_item_path(item),
+                  method: :delete,
+                  form: { class: "inline-flex" },
+                  data: { turbo_confirm: "Remover esta música do roteiro?" },
+                  class: "inline-flex items-center justify-center h-9 w-9 rounded-md text-destructive/60 hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer",
+                  aria: { label: "Remover do roteiro" } do %>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+    <% end %>
+  </div>
+</div>

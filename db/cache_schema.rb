@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_182020) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_15_025445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -107,10 +107,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_182020) do
   create_table "setlist_items", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key"
+    t.bigint "mass_part_id"
     t.bigint "music_id", null: false
     t.integer "position", default: 0, null: false
     t.bigint "setlist_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["mass_part_id"], name: "index_setlist_items_on_mass_part_id"
     t.index ["music_id"], name: "index_setlist_items_on_music_id"
     t.index ["setlist_id"], name: "index_setlist_items_on_setlist_id"
   end
@@ -121,8 +123,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_182020) do
     t.string "location"
     t.string "name", null: false
     t.integer "setlist_type", default: 0, null: false
+    t.string "uid"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["uid"], name: "index_setlists_on_uid", unique: true
     t.index ["user_id"], name: "index_setlists_on_user_id"
   end
 
@@ -285,6 +289,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_182020) do
   add_foreign_key "saved_musics", "repertoire_musics", column: "music_id"
   add_foreign_key "saved_musics", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "setlist_items", "repertoire_mass_parts", column: "mass_part_id"
   add_foreign_key "setlist_items", "repertoire_musics", column: "music_id"
   add_foreign_key "setlist_items", "setlists"
   add_foreign_key "setlists", "users"

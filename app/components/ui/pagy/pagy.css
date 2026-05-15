@@ -45,7 +45,7 @@
 
       &.current {
         @apply relative z-10 flex items-center justify-center cursor-default size-8;
-        @apply bg-primary border-primary text-primary-foreground;
+        @apply bg-secondary border-secondary text-secondary-foreground;
       }
     }
 

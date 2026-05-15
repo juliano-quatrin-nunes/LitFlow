@@ -1,0 +1,73 @@
+<%= ui.header class: "mb-8" do %>
+  <div class="flex flex-col gap-1">
+    <%= ui.breadcrumbs do %>
+      <%= ui.breadcrumb "Roteiro Compartilhado" %>
+      <%= ui.breadcrumb @setlist.name %>
+    <% end %>
+
+    <div class="mt-2">
+      <h1 class="font-bold text-3xl tracking-tight text-foreground flex items-center gap-3">
+        <%= @setlist.name %>
+        <%= ui.badge @setlist.setlist_type.capitalize, variant: :secondary %>
+      </h1>
+      <div class="flex items-center gap-4 text-muted-foreground mt-2 text-sm">
+        <% if @setlist.date.present? %>
+          <div class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+            <%= l @setlist.date, format: :long %>
+          </div>
+        <% end %>
+        <% if @setlist.location.present? %>
+          <div class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <%= @setlist.location %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if @setlist.missa? %>
+  <div class="flex flex-col gap-6 mt-8">
+    <% @setlist.missa_slots.each do |part, items| %>
+      <% next if items.empty? %>
+      <section class="flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-border pb-1">
+          <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground"><%= part.name %></h2>
+          <span class="text-xs text-muted-foreground"><%= items.size %> música<%= "s" if items.size != 1 %></span>
+        </div>
+        <div class="flex flex-col gap-3">
+          <% items.each do |item| %>
+            <%= render partial: "repertoire/musics/music_card", locals: { music: item.music, preferred_key: item.key } %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+    <% unassigned = @setlist.items.includes(:music).where(mass_part_id: nil).order(:position) %>
+    <% if unassigned.any? %>
+      <section class="flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-border pb-1">
+          <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Sem Categoria</h2>
+          <span class="text-xs text-muted-foreground"><%= unassigned.size %> música<%= "s" if unassigned.size != 1 %></span>
+        </div>
+        <div class="flex flex-col gap-3">
+          <% unassigned.each do |item| %>
+            <%= render partial: "repertoire/musics/music_card", locals: { music: item.music, preferred_key: item.key } %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+<% elsif @setlist.items.any? %>
+  <div class="flex flex-col gap-3 mt-8">
+    <% @setlist.items.includes(:music).order(:position).each do |item| %>
+      <%= render partial: "repertoire/musics/music_card", locals: { music: item.music, preferred_key: item.key } %>
+    <% end %>
+  </div>
+<% else %>
+  <%= ui.card class: "p-8 text-center mt-8" do %>
+    <p class="text-muted-foreground">Este roteiro ainda não possui músicas.</p>
+  <% end %>
+<% end %>

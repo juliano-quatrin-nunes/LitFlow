@@ -6,6 +6,21 @@ class SetlistsTest < ActionDispatch::IntegrationTest
     post session_path, params: { email_address: @user.email_address, password: "password" }
   end
 
+  test "unauthenticated user is redirected to login when accessing setlists" do
+    delete session_path # sign out
+    get setlists_path
+    assert_redirected_to new_session_path
+  end
+
+  test "after signing in, user is redirected back to original setlist destination" do
+    delete session_path # sign out
+    get setlists_path
+    assert_redirected_to new_session_path
+
+    post session_path, params: { email_address: @user.email_address, password: "password" }
+    assert_redirected_to setlists_url
+  end
+
   test "user can create a new setlist and see it on the index" do
     get setlists_path
     assert_response :success

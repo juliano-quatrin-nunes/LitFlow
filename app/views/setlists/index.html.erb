@@ -6,33 +6,38 @@
     <% end %>
     <h1 class="font-bold text-3xl tracking-tight text-foreground">Meus Roteiros</h1>
   </div>
-  <%= ui.btn "Novo Roteiro", url: new_setlist_path, variant: :primary, size: :sm %>
+  <%= ui.btn url: new_setlist_path, class: "gap-2" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+    Novo Roteiro
+  <% end %>
 <% end %>
 
 <% if @setlists.any? %>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
     <% @setlists.each do |setlist| %>
       <%= link_to setlist_path(setlist), class: "block group h-full", data: { turbo_frame: "_top" } do %>
-        <%= ui.card class: "hover:border-primary/50 transition-all shadow-sm group-hover:shadow-md h-full flex flex-col p-4" do %>
-          <div class="flex flex-col gap-2 flex-grow">
-            <h2 class="text-xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors"><%= setlist.name %></h2>
-            <div class="flex flex-col gap-1 text-sm text-muted-foreground mt-2">
-              <% if setlist.date.present? %>
-                <div class="flex items-center gap-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                  <%= l setlist.date, format: :long %>
-                </div>
-              <% end %>
+        <%= ui.card class: "hover:border-secondary/40 transition-all shadow-sm group-hover:shadow-md h-full flex flex-col px-4 py-3" do %>
+          <div class="flex flex-col flex-grow">
+            <div class="flex flex-row justify-between">
+                <h2 class="text-xl font-bold text-foreground leading-tight group-hover:text-secondary transition-colors"><%= setlist.name %></h2>
+
+              <div class="flex justify-between items-center">
+                <%= ui.badge setlist.setlist_type.capitalize, variant: :secondary, size: :xs %>
+              </div>
+            </div>
+            <div class="flex justify-between text-sm text-muted-foreground mt-2">
               <% if setlist.location.present? %>
-                <div class="flex items-center gap-1.5">
+                <p class="text-sm text-muted-foreground flex items-center gap-1.5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                   <%= setlist.location %>
-                </div>
+                </p>
               <% end %>
-            </div>
-            
-            <div class="mt-auto pt-4 flex justify-between items-center">
-              <%= ui.badge setlist.setlist_type.capitalize, variant: :secondary, size: :xs %>
+                              <% if setlist.date.present? %>
+                  <p class="text-sm text-muted-foreground flex items-center gap-1.5">
+                    <%= l setlist.date, format: :long %>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                  </p>
+                <% end %>
             </div>
           </div>
         <% end %>

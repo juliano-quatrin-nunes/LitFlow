@@ -1,0 +1,15 @@
+<div class="flex items-center gap-3 flex-wrap">
+  <span>Música já está no roteiro <strong><%= setlist.name %></strong>.</span>
+  <%= button_to "Adicionar mesmo assim",
+                setlist_items_path(force: true),
+                params: {
+                  setlist_item: {
+                    setlist_id: setlist.id,
+                    music_id: music.id,
+                    key: key,
+                    mass_part_id: mass_part_id
+                  }
+                },
+                form: { class: "inline", data: { turbo_frame: :_top } },
+                class: "underline font-semibold cursor-pointer hover:opacity-80" %>
+</div>

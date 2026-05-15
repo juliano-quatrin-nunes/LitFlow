@@ -8,26 +8,26 @@
   --radius-base: theme(--radius-md);
   --radius-btn: var(--radius-base);
   --radius-field: theme(--radius-md);
-  --background: #ffffff;
+  --background: #fdfffa;
   --foreground: #171717; /* Neutral almost black */
   --overlay: rgba(0, 0, 0, 0.5);
-  --card: #ffffff;
+  --card: #fdfffa;
   --card-foreground: var(--foreground);
-  --popover: #ffffff;
+  --popover: #fdfffa;
   --popover-foreground: var(--foreground);
 
   /* User Provided Palette */
   /* #483F74 (Deep Purple) -> Primary */
   --primary: oklch(0.35 0.08 285);
-  --primary-foreground: #ffffff;
+  --primary-foreground: #fdfffa;
 
   /* #C99542 (Gold) -> Accent — lifted lightness for contrast on dark surfaces */
   --accent: oklch(0.82 0.14 80);
   --accent-foreground: oklch(0.25 0.05 62);
 
-  /* #452400 (Deep Brown) -> Secondary */
-  --secondary: oklch(0.2982 0.0685 62.12);
-  --secondary-foreground: #ffffff;
+  /* #452400 (Deep Brown) -> Secondary #6A381F - teste porcelana: #FDFFFA*/
+  --secondary: oklch(0.3987 0.0802 46.05);
+  --secondary-foreground: #fdfffa;
 
   /* Sidebar Background - Very subtle tint of the brown/gold for a neutral parchment feel */
   --sidebar: oklch(0.98 0.01 75);
@@ -41,12 +41,12 @@
   --success: oklch(0.95 0.03 160);
   --success-foreground: #047857;
 
-  /* #A0D2DB (Light Blue) -> Info */
-  --info: oklch(0.82 0.05 220);
-  --info-foreground: #0369A1;
+  /* #A0D2DB (Light Blue) -> Info  teste #B4ADEA*/
+  --info: oklch(0.7751 0.0865 289.47);
+  --info-foreground: oklch(0.35 0.08 285);
 
-  --destructive: oklch(0.60 0.18 25);
-  --destructive-foreground: #ffffff;
+  --destructive: oklch(0.6 0.18 25);
+  --destructive-foreground: #fdfffa;
 }
 
 .dark {
@@ -70,7 +70,7 @@
   --input-focus: oklch(from var(--primary) l c h / 40%);
   --input-ring: oklch(from var(--primary) l c h / 10%);
   --destructive: oklch(0.65 0.2 25);
-  --success: oklch(0.70 0.19 145);
-  --warning: oklch(0.80 0.16 85);
-  --info: oklch(0.70 0.16 240);
+  --success: oklch(0.7 0.19 145);
+  --warning: oklch(0.8 0.16 85);
+  --info: oklch(0.7 0.16 240);
 }

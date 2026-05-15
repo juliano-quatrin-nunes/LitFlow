@@ -1,0 +1,19 @@
+<%= ui.modal title: "Adicionar Música#{@mass_part ? ' — ' + @mass_part.name : ''}", size: "6xl" do %>
+  <%= ui.modal_body class: "min-h-[70vh]" do %>
+    <%= render partial: "repertoire/musics/library", locals: {
+      musics: @musics,
+      seasons: @seasons,
+      parts: @parts,
+      user_saved_musics: @user_saved_musics,
+      library_scope: @library_scope,
+      library_path: ->(p = {}) {
+        new_setlist_item_path({ setlist_id: @setlist.id, mass_part_id: @mass_part&.id }.merge(p).compact)
+      },
+      frame_id: "modalContent",
+      advance_history: false,
+      mode: :select,
+      setlist: @setlist,
+      mass_part: @mass_part
+    } %>
+  <% end %>
+<% end %>

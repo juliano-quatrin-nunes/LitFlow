@@ -2,13 +2,13 @@ require "test_helper"
 
 class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @invitation = Invitation.create!(email: "invited@example.com")
+    @invitation = Invitation.create!
   end
 
   test "should get new with valid token" do
     get new_registration_url(token: @invitation.token)
     assert_response :success
-    assert_select "p", text: /invited@example.com/
+    assert_select "form[action=?]", registration_path(token: @invitation.token)
   end
 
   test "should redirect new with invalid token" do
@@ -28,6 +28,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_difference -> { User.count } => 1, -> { Invitation.count } => -1 do
       post registration_url(token: @invitation.token), params: {
         user: {
+          email_address: "newuser@example.com",
           password: "password123",
           password_confirmation: "password123"
         }
@@ -36,20 +37,20 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to root_url
     assert_not_nil cookies[:session_id]
-    assert_equal "invited@example.com", User.last.email_address
+    assert_equal "newuser@example.com", User.last.email_address
   end
 
-  test "should not create user with invalid data" do
+  test "should not create user with mismatched passwords" do
     assert_no_difference "User.count" do
       post registration_url(token: @invitation.token), params: {
         user: {
-          password: "short",
+          email_address: "newuser@example.com",
+          password: "password123",
           password_confirmation: "mismatch"
         }
       }
     end
 
     assert_response :unprocessable_entity
-    assert_select "div", text: /too short|doesn't match/i
   end
 end

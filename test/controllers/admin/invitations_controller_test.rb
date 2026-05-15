@@ -26,13 +26,13 @@ class Admin::InvitationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create invitation" do
     assert_difference("Invitation.count") do
-      post admin_invitations_url, params: { invitation: { email: "new@example.com" } }
+      post admin_invitations_url
     end
     assert_redirected_to admin_invitations_url
   end
 
   test "should destroy invitation" do
-    invitation = Invitation.create!(email: "to_destroy@example.com")
+    invitation = Invitation.create!
     assert_difference("Invitation.count", -1) do
       delete admin_invitation_url(invitation)
     end
