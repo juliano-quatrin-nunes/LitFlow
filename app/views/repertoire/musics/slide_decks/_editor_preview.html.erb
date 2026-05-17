@@ -1,0 +1,14 @@
+<%# locals: (music:, sections:, sequence:) %>
+<%# Preview frame returned by SlideDecksController#create — no form-builder, since the user has not yet saved. %>
+<turbo-frame id="slide_deck_editor">
+  <% if sections.any? %>
+    <%= render "repertoire/musics/slide_decks/section_editor",
+          slide_deck: music.slide_deck,
+          sections: sections %>
+
+    <%= render "repertoire/musics/slide_decks/sequence_editor",
+          slide_deck: music.slide_deck,
+          sections: sections,
+          sequence: sequence %>
+  <% end %>
+</turbo-frame>

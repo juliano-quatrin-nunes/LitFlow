@@ -1,0 +1,42 @@
+# == Schema Information
+#
+# Table name: slide_decks
+# Database name: primary
+#
+#  id                    :bigint           not null, primary key
+#  pptx_fingerprint      :string
+#  slide_sequence        :jsonb            not null
+#  slideable_type        :string           not null
+#  slides_generated_from :string
+#  slides_json           :jsonb            not null
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  slideable_id          :bigint           not null
+#
+# Indexes
+#
+#  index_slide_decks_on_slideable_type_and_slideable_id  (slideable_type,slideable_id) UNIQUE
+#
+one:
+  slideable: one (Repertoire::Music)
+  slides_json:
+    - id: verse_1
+      type: verse
+      label: Estrofe 1
+      lines:
+        - Vem Espírito
+  slide_sequence:
+    - verse_1
+  slides_generated_from: <%= Digest::SHA1.hexdigest("[E]Vem [A]Espírito").inspect %>
+
+two:
+  slideable: two (Repertoire::Music)
+  slides_json:
+    - id: verse_1
+      type: verse
+      label: Estrofe 1
+      lines:
+        - Lala lala
+  slide_sequence:
+    - verse_1
+  slides_generated_from: <%= Digest::SHA1.hexdigest("[G]Lala [D]lala").inspect %>

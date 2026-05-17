@@ -130,6 +130,96 @@ class Repertoire::MusicsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: other.title
   end
 
+  test "edit page renders the slide editor inline when slide_deck has slides" do
+    sign_in_as users(:user)
+    music = repertoire_musics(:one)
+
+    get repertoire_music_by_author_edit_url(music.author, music)
+
+    assert_response :success
+    assert_select "turbo-frame[id=slide_deck_editor]" do
+      assert_select "[data-controller~=slide-section-editor]"
+    end
+  end
+
+  test "edit page shows generate button when slide_deck has no slides yet" do
+    sign_in_as users(:user)
+    music = repertoire_musics(:one)
+    music.slide_deck.update!(slides_json: [], slide_sequence: [])
+
+    get repertoire_music_by_author_edit_url(music.author, music)
+
+    assert_response :success
+    assert_match repertoire_music_slide_deck_path(music.author, music), response.body
+    assert_select "turbo-frame[id=slide_deck_editor] [data-controller~=slide-section-editor]", false
+  end
+
+  test "edit page shows cifra-changed hint when content_raw hash differs from slides_generated_from" do
+    sign_in_as users(:user)
+    music = repertoire_musics(:one)
+    music.slide_deck.update!(slides_generated_from: "some-old-hash-that-does-not-match")
+
+    get repertoire_music_by_author_edit_url(music.author, music)
+
+    assert_response :success
+    assert_select "[data-role=cifra-changed-banner]"
+  end
+
+  test "edit page hides cifra-changed hint when hashes match" do
+    sign_in_as users(:user)
+    music = repertoire_musics(:one)
+    music.slide_deck.update!(slides_generated_from: Digest::SHA1.hexdigest(music.content_raw))
+
+    get repertoire_music_by_author_edit_url(music.author, music)
+
+    assert_response :success
+    assert_select "[data-role=cifra-changed-banner]", false
+  end
+
+  test "Music update with changed content_raw does not overwrite slides_json or slide_sequence" do
+    user = users(:user)
+    sign_in_as user
+    music = repertoire_musics(:one)
+    deck = music.slide_deck
+    original_slides_json = deck.slides_json.deep_dup
+    original_sequence = deck.slide_sequence.deep_dup
+    original_generated_from = deck.slides_generated_from
+
+    patch repertoire_music_by_author_update_url(music.author, music),
+          params: { repertoire_music: { content_raw: "G\nUma cifra totalmente diferente" } }
+
+    deck.reload
+    assert_equal original_slides_json, deck.slides_json
+    assert_equal original_sequence, deck.slide_sequence
+    assert_equal original_generated_from, deck.slides_generated_from
+  end
+
+  test "Music update persists slide edits alongside content_raw atomically" do
+    user = users(:user)
+    sign_in_as user
+    music = repertoire_musics(:one)
+    edited_sections = [
+      { "id" => "verse_1", "type" => "verse", "label" => "Estrofe 1", "lines" => [ "Letra editada na mesma submissão" ] }
+    ]
+
+    patch repertoire_music_by_author_update_url(music.author, music),
+          params: {
+            repertoire_music: {
+              content_raw: "[E]Letra atualizada",
+              slide_deck_attributes: {
+                id: music.slide_deck.id,
+                slides_json: edited_sections.to_json,
+                slide_sequence: [ "verse_1" ].to_json
+              }
+            }
+          }
+
+    music.reload
+    assert_includes music.content_raw, "Letra atualizada"
+    assert_equal edited_sections, music.slide_deck.slides_json
+    assert_equal [ "verse_1" ], music.slide_deck.slide_sequence
+  end
+
   test "should show liturgical context on music page" do
     music = repertoire_musics(:one)
     season = repertoire_liturgical_seasons(:one)

@@ -28,9 +28,16 @@ Rails.application.routes.draw do
       patch ":id", to: "musics#update", as: :update
       put ":id", to: "musics#update"
       delete ":id", to: "musics#destroy", as: :destroy
-      
+
       get ":id/liturgical_categories/edit", to: "musics/liturgical_categories#edit", as: :edit_liturgical_categories
       patch ":id/liturgical_categories", to: "musics/liturgical_categories#update", as: :liturgical_categories
+    end
+
+    scope "musics/:author_slug/:id", as: :music do
+      post "slide_deck", to: "musics/slide_decks#create", as: :slide_deck
+      patch "slide_deck", to: "musics/slide_decks#update"
+      post "slide_deck/regenerate", to: "musics/slide_decks#regenerate", as: :regenerate_slide_deck
+      get "pptx", to: "musics/pptx#show", as: :pptx
     end
   end
 

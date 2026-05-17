@@ -1,0 +1,25 @@
+<%
+  local_assigns[:kind] ||= "info"
+  description = local_assigns[:description]
+  download_url = local_assigns[:download_url]
+  filename = local_assigns[:filename]
+%>
+<div data-controller="toast"
+     data-toast
+     data-toast-kind-value="<%= kind %>"
+     class="pointer-events-auto bg-secondary text-secondary-foreground border border-secondary rounded-lg shadow-lg px-4 py-3 text-sm flex flex-col gap-0.5 min-w-[14rem]">
+  <p class="font-semibold leading-snug"><%= title %></p>
+  <% if description.present? %>
+    <p class="text-secondary-foreground/80 leading-snug"><%= description %></p>
+  <% end %>
+  <% if download_url.present? %>
+    <a href="<%= download_url %>"
+       download="<%= filename %>"
+       data-controller="auto-download"
+       class="hidden"
+       aria-hidden="true"
+       tabindex="-1">
+      Baixar <%= filename %>
+    </a>
+  <% end %>
+</div>

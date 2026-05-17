@@ -60,7 +60,10 @@ module Repertoire
     end
 
     def music_params
-      params.expect(repertoire_music: [ :title, :author_id, :original_key, :content_raw, :youtube_url ])
+      params.require(:repertoire_music).permit(
+        :title, :author_id, :original_key, :content_raw, :youtube_url,
+        slide_deck_attributes: [ :id, :slides_json, :slide_sequence ]
+      )
     end
   end
 end

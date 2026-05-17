@@ -35,11 +35,17 @@
         label: "Link do YouTube", 
         placeholder: "https://www.youtube.com/watch?v=..." %>
 
-  <%= form.text_area :content_raw, 
-        label: "Cole a Música (Cifras sobre a Letra)", 
-        rows: 15, 
+  <%= form.text_area :content_raw,
+        label: "Cole a Música (Cifras sobre a Letra)",
+        rows: 15,
         placeholder: "E                  C#m\nVem e eu mostrarei que o meu caminho",
         class: "font-mono" %>
+
+  <% if music.persisted? %>
+    <%= render "repertoire/musics/slide_decks/form_section",
+          music: music,
+          form: form %>
+  <% end %>
 
   <div class="mt-8">
     <%= ui.btn form.object.persisted? ? "Atualizar Música" : "Criar Música", type: :submit, variant: :primary, block: true %>

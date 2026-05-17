@@ -1,0 +1,68 @@
+<%# locals: (slide_deck:, sections:, sequence:, form: nil, hidden_field_name: nil) %>
+<%# Vertical drag-and-drop list. One row per occurrence; reorder by handle, duplicate or remove inline. %>
+<% sections_by_id = sections.map { |s| s.with_indifferent_access }.index_by { |s| s[:id] } %>
+<% hidden_name = hidden_field_name || (form && "#{form.object_name}[slide_deck_attributes][slide_sequence]") %>
+<details class="border border-border rounded-lg mt-4">
+  <summary class="cursor-pointer px-4 py-3 text-sm font-medium select-none">
+    Sequência <span class="text-muted-foreground font-normal">(<%= sequence.size %> slides)</span>
+  </summary>
+  <div class="px-4 pb-4 pt-2" data-controller="slide-sequence-editor">
+    <p class="text-xs text-muted-foreground mb-3">Arraste para reordenar. Duplique para repetir uma seção, remova para tirá-la da apresentação.</p>
+    <div data-controller="sortable"
+         data-action="end->slide-sequence-editor#serialize"
+         data-slide-sequence-editor-target="chips"
+         class="flex flex-col gap-2">
+      <% sequence.each do |id| %>
+        <% section = sections_by_id[id] %>
+        <% next unless section %>
+        <div class="group flex items-center gap-3 bg-background border border-border rounded-md pl-2 pr-3 py-2 hover:border-foreground/30 transition-colors"
+             data-sortable-id="<%= id %>">
+          <button type="button"
+                  class="sortable-handle cursor-grab text-muted-foreground hover:text-foreground p-1"
+                  aria-label="Arrastar para reordenar"
+                  tabindex="-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+          </button>
+
+          <div class="flex flex-1 items-center gap-2 min-w-0">
+            <span class="font-medium text-sm truncate"><%= section[:label] %></span>
+            <span class="text-[10px] uppercase tracking-wide text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+              <%= section[:type] %>
+            </span>
+            <span class="text-xs text-muted-foreground font-mono"><%= id %></span>
+          </div>
+
+          <div class="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+            <button type="button"
+                    data-action="click->slide-sequence-editor#duplicate"
+                    data-id="<%= id %>"
+                    aria-label="Duplicar"
+                    class="text-xs px-2 py-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Duplicar
+            </button>
+            <button type="button"
+                    data-action="click->slide-sequence-editor#remove"
+                    aria-label="Remover"
+                    class="text-xs p-1 rounded hover:bg-red-50 hover:text-red-600 text-muted-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if sequence.empty? %>
+      <div class="text-sm text-muted-foreground italic py-4 text-center border border-dashed border-border rounded-md">
+        Nenhum slide na sequência. Adicione duplicando uma seção ou clicando em "Regenerar".
+      </div>
+    <% end %>
+
+    <% if hidden_name %>
+      <input type="hidden"
+             name="<%= hidden_name %>"
+             value="<%= sequence.to_json %>"
+             data-slide-sequence-editor-target="hiddenField">
+    <% end %>
+  </div>
+</details>

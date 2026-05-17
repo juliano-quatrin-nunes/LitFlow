@@ -24,7 +24,10 @@
 #  fk_rails_...  (author_id => repertoire_authors.id)
 #
 class Repertoire::Music < ApplicationRecord
+  include Slideable
+
   belongs_to :author, class_name: "Repertoire::Author"
+  accepts_nested_attributes_for :slide_deck, update_only: true
 
   has_many :music_liturgical_seasons, class_name: "Repertoire::MusicLiturgicalSeason", dependent: :destroy
   has_many :liturgical_seasons, through: :music_liturgical_seasons
@@ -62,14 +65,14 @@ class Repertoire::Music < ApplicationRecord
 
   def content_json
     data = super.present? ? super : nil
-    
+
     if data.nil? && content_raw.present?
       result = Repertoire::MusicParserService.call(content_raw)
       data = result[:json]
     end
 
     return [] if data.blank?
-    
+
     # Deeply convert to indifferent access
     data.map { |section| section.with_indifferent_access }
   end

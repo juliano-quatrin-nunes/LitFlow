@@ -1,0 +1,39 @@
+<%# locals: (music:) %>
+<%# Rendered by SlideDecksController#regenerate / #update — replaces the slide_deck_editor Turbo Frame. %>
+<%# Hidden field names must match what the music form would have emitted, so the next Music save round-trips correctly. %>
+<turbo-frame id="slide_deck_editor">
+  <% deck = music.slide_deck %>
+  <% if deck && deck.slides_json.any? %>
+    <div class="rounded-lg border border-border bg-card">
+      <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-border">
+        <div>
+          <div class="text-sm font-semibold">Slides</div>
+          <div class="text-xs text-muted-foreground"><%= deck.slides_json.size %> seções · edite o conteúdo nas abas abaixo</div>
+        </div>
+        <button type="button"
+                data-controller="regenerate-slides"
+                data-regenerate-slides-url-value="<%= repertoire_music_regenerate_slide_deck_path(music.author, music) %>"
+                data-action="click->regenerate-slides#trigger"
+                class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-md border border-border hover:bg-muted text-foreground transition-colors shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+          Regenerar slides
+        </button>
+      </div>
+
+      <div class="p-4">
+        <input type="hidden" name="repertoire_music[slide_deck_attributes][id]" value="<%= deck.id %>">
+
+        <%= render "repertoire/musics/slide_decks/section_editor",
+              slide_deck: deck,
+              sections: deck.slides_json,
+              hidden_field_name: "repertoire_music[slide_deck_attributes][slides_json]" %>
+
+        <%= render "repertoire/musics/slide_decks/sequence_editor",
+              slide_deck: deck,
+              sections: deck.slides_json,
+              sequence: deck.slide_sequence,
+              hidden_field_name: "repertoire_music[slide_deck_attributes][slide_sequence]" %>
+      </div>
+    </div>
+  <% end %>
+</turbo-frame>

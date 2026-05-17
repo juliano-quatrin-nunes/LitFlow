@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: invitations
+# Database name: primary
+#
+#  id         :bigint           not null, primary key
+#  expires_at :datetime
+#  token      :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_invitations_on_token  (token) UNIQUE
+#
 require "test_helper"
 
 class InvitationTest < ActiveSupport::TestCase

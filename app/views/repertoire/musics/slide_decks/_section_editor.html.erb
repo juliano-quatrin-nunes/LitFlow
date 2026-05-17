@@ -1,0 +1,80 @@
+<%# locals: (slide_deck:, sections:, form: nil, hidden_field_name: nil) %>
+<%# Tabbed editor — one tab per section. Mutations sync into a hidden JSON field via slide-sections controller. %>
+<%# `form` auto-derives the hidden field name; `hidden_field_name` overrides it (used by slice 5's SetlistItem). %>
+<% hidden_name = hidden_field_name || (form && "#{form.object_name}[slide_deck_attributes][slides_json]") %>
+<div data-controller="slide-sections slide-section-tabs"
+     data-slide-sections-hidden-name-value="<%= hidden_name %>">
+
+  <div class="border-b border-border overflow-x-auto">
+    <div role="tablist" class="flex gap-1 px-1 min-w-min">
+      <% sections.each_with_index do |section, index| %>
+        <% section = section.with_indifferent_access %>
+        <button type="button"
+                role="tab"
+                data-slide-section-tabs-target="tab"
+                data-active="<%= index.zero? %>"
+                data-action="click->slide-section-tabs#select"
+                data-tab-for="<%= section[:id] %>"
+                aria-selected="<%= index.zero? %>"
+                class="flex items-center gap-2 px-3 py-2 text-sm whitespace-nowrap border-b-2 border-transparent data-[active=true]:border-primary data-[active=true]:text-foreground text-muted-foreground hover:text-foreground transition-colors">
+          <span class="font-medium" data-tab-label><%= section[:label] %></span>
+          <span class="text-[10px] uppercase tracking-wide bg-muted px-1.5 py-0.5 rounded">
+            <%= section[:type] %>
+          </span>
+        </button>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <% sections.each_with_index do |section, index| %>
+      <% section = section.with_indifferent_access %>
+      <div role="tabpanel"
+           data-slide-section-tabs-target="panel"
+           data-slide-sections-target="card"
+           data-controller="slide-section-editor"
+           data-section-id="<%= section[:id] %>"
+           data-section-type="<%= section[:type] %>"
+           data-active="<%= index.zero? %>"
+           class="data-[active=false]:hidden flex flex-col gap-3">
+
+        <div class="grid grid-cols-1 md:grid-cols-[1fr,200px] gap-3">
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="font-medium">Rótulo</span>
+            <input type="text"
+                   value="<%= section[:label] %>"
+                   data-slide-section-editor-target="labelField"
+                   data-action="input->slide-section-editor#syncTabLabel input->slide-sections#serialize"
+                   class="border border-border rounded-md px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40">
+          </label>
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="font-medium">Tipo</span>
+            <select data-slide-section-editor-target="typeField"
+                    data-action="change->slide-sections#serialize">
+              <%= options_for_select(
+                    %w[intro verse chorus bridge outro label].map { |t| [ t.humanize, t ] },
+                    section[:type]
+                  ) %>
+            </select>
+          </label>
+        </div>
+
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="font-medium">Linhas</span>
+          <textarea data-slide-section-editor-target="linesField"
+                    data-action="input->slide-section-editor#refresh input->slide-sections#serialize"
+                    rows="<%= [ Array(section[:lines]).size, 4 ].max %>"
+                    class="font-mono text-sm border border-border rounded-md px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"><%= Array(section[:lines]).join("\n") %></textarea>
+        </label>
+
+        <div data-slide-section-editor-target="hints" class="min-h-[1.5rem]"></div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if hidden_name %>
+    <input type="hidden" name="<%= hidden_name %>"
+           value="<%= sections.to_json %>"
+           data-slide-sections-target="hiddenField">
+  <% end %>
+</div>

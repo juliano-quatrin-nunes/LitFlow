@@ -1,0 +1,15 @@
+<%# locals: (music:) %>
+<%# Sibling action to the music form — empty-state "Gerar" button only. Regenerar lives inside the form section. %>
+<% deck = music.slide_deck %>
+<% has_slides = deck && deck.slides_json.present? %>
+
+<% unless has_slides %>
+  <div class="mt-4">
+    <%= form_with url: repertoire_music_slide_deck_path(music.author, music),
+                  method: :post,
+                  data: { turbo_frame: "slide_deck_editor" } do |gen_form| %>
+      <%= gen_form.hidden_field "repertoire_music[content_raw]", value: music.content_raw %>
+      <%= ui.btn "Gerar slides a partir da cifra", type: :submit, variant: :secondary %>
+    <% end %>
+  </div>
+<% end %>

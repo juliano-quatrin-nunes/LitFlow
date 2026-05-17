@@ -1,0 +1,12 @@
+<%= turbo_stream.append "toasts" do %>
+  <%= render partial: "shared/toasts/toast",
+             locals: {
+               title: "Gerando seu PPTX",
+               description: "Vamos avisar aqui assim que o arquivo estiver pronto.",
+               kind: "info"
+             } %>
+<% end %>
+
+<%= turbo_stream.append "toasts" do %>
+  <%= turbo_stream_from "slide_deck_#{@slide_deck.id}" %>
+<% end %>
