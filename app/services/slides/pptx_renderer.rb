@@ -9,14 +9,13 @@ module Slides
       new(slide_deck, timeout: timeout).call
     end
 
-    def initialize(slide_deck, timeout: DEFAULT_TIMEOUT_SECONDS)
-      @slide_deck = slide_deck
-      @timeout = timeout
+    def self.render_slides(slides, timeout: DEFAULT_TIMEOUT_SECONDS)
+      payload = { "theme" => Slides::Theme::V1.to_h, "slides" => slides }
+      shell_out(payload, timeout: timeout)
     end
 
-    def call
-      payload = build_payload
-      stdout, stderr, status = Timeout.timeout(@timeout) do
+    def self.shell_out(payload, timeout: DEFAULT_TIMEOUT_SECONDS)
+      stdout, stderr, status = Timeout.timeout(timeout) do
         Open3.capture3(
           "python3",
           Rails.root.join("bin/render_pptx.py").to_s,
@@ -30,6 +29,15 @@ module Slides
       end
 
       stdout
+    end
+
+    def initialize(slide_deck, timeout: DEFAULT_TIMEOUT_SECONDS)
+      @slide_deck = slide_deck
+      @timeout = timeout
+    end
+
+    def call
+      self.class.shell_out(build_payload, timeout: @timeout)
     end
 
     private
@@ -51,11 +59,7 @@ module Slides
         section = sections_by_id[section_id.to_s]
         next [] unless section
 
-        pages = Slides::Paginator.call(
-          Array(section["lines"]),
-          max_visual: Slides::Theme::V1::MAX_VISUAL_LINES,
-          char_threshold: Slides::Theme::V1::MAX_CHARS_PER_LINE
-        )
+        pages = Slides::Paginator.call(Array(section["lines"]))
 
         pages.map { |page_lines| { "type" => section["type"].to_s, "lines" => page_lines } }
       end

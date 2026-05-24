@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_16_231553) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_17_073334) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -134,14 +134,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_231553) do
 
   create_table "setlist_items", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.bigint "item_id", null: false
+    t.string "item_type", null: false
     t.string "key"
     t.bigint "mass_part_id"
-    t.bigint "music_id", null: false
     t.integer "position", default: 0, null: false
     t.bigint "setlist_id", null: false
+    t.jsonb "slide_sequence_override"
+    t.jsonb "slides_json_override"
     t.datetime "updated_at", null: false
+    t.index ["item_type", "item_id"], name: "index_setlist_items_on_item_type_and_item_id"
     t.index ["mass_part_id"], name: "index_setlist_items_on_mass_part_id"
-    t.index ["music_id"], name: "index_setlist_items_on_music_id"
     t.index ["setlist_id"], name: "index_setlist_items_on_setlist_id"
   end
 
@@ -150,6 +153,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_231553) do
     t.date "date"
     t.string "location"
     t.string "name", null: false
+    t.string "pptx_fingerprint"
     t.integer "setlist_type", default: 0, null: false
     t.string "uid"
     t.datetime "updated_at", null: false
@@ -332,7 +336,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_231553) do
   add_foreign_key "saved_musics", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "setlist_items", "repertoire_mass_parts", column: "mass_part_id"
-  add_foreign_key "setlist_items", "repertoire_musics", column: "music_id"
   add_foreign_key "setlist_items", "setlists"
   add_foreign_key "setlists", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

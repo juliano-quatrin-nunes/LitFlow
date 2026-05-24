@@ -33,7 +33,7 @@ module Repertoire
       @music = Music.new(music_params)
 
       if @music.save
-        redirect_to repertoire_music_by_author_show_path(@music.author, @music), notice: "Música criada com sucesso."
+        redirect_to repertoire_music_by_author_edit_path(@music.author, @music), notice: "Música criada com sucesso. Os slides foram gerados a partir da cifra — revise abaixo."
       else
         render :new, status: :unprocessable_entity
       end

@@ -74,16 +74,16 @@ For the "Adicionar Música" flow: the link at `new_setlist_item_path(music_id: .
 
 ## Acceptance criteria
 
-- [ ] Migration adds `item_type` and `item_id`, backfills existing rows from `music_id`, drops `music_id` (and its FK constraint). Index on `[item_type, item_id]` exists.
-- [ ] `SetlistItem belongs_to :item, polymorphic: true` and resolves to a `Repertoire::Music` for every existing row.
-- [ ] `item_type` whitelist validation rejects non-allowed types.
-- [ ] `key` absence validation rejects setting `key` on non-Music items (verifiable in a model spec).
-- [ ] `setlist_item.music` shim returns the underlying Music when `item_type == "Repertoire::Music"`; returns nil otherwise.
-- [ ] All existing views, controllers, and tests pass without changes to user-visible behavior.
-- [ ] The "Adicionar Música" flow on the Setlist page continues to work end-to-end (Setlist#show, modal, form submission, redirect).
-- [ ] The existing `sortable` reorder controller still reorders items correctly.
-- [ ] `Repertoire::Music has_many :setlist_items, as: :item, dependent: :destroy` matches the prior cascade behavior on Music delete.
-- [ ] No new user-facing feature is introduced — this is a refactor confirmed by a green test suite.
+- [x] Migration adds `item_type` and `item_id`, backfills existing rows from `music_id`, drops `music_id` (and its FK constraint). Index on `[item_type, item_id]` exists.
+- [x] `SetlistItem belongs_to :item, polymorphic: true` and resolves to a `Repertoire::Music` for every existing row.
+- [x] `item_type` whitelist validation rejects non-allowed types.
+- [x] `key` absence validation rejects setting `key` on non-Music items (verifiable in a model spec).
+- [x] `setlist_item.music` shim returns the underlying Music when `item_type == "Repertoire::Music"`; returns nil otherwise.
+- [x] All existing views, controllers, and tests pass without changes to user-visible behavior.
+- [x] The "Adicionar Música" flow on the Setlist page continues to work end-to-end (Setlist#show, modal, form submission, redirect).
+- [x] The existing `sortable` reorder controller still reorders items correctly.
+- [x] `Repertoire::Music has_many :setlist_items, as: :item, dependent: :destroy` matches the prior cascade behavior on Music delete.
+- [x] No new user-facing feature is introduced — this is a refactor confirmed by a green test suite.
 
 ## Blocked by
 
@@ -95,3 +95,17 @@ After completing the work and getting tests green:
 
 1. Mark each acceptance-criterion checkbox above as completed (`[x]`).
 2. Append a `## Status` section recording: completion date, files added/changed, key verification output, and test suite totals.
+
+## Status
+
+- Completed: 2026-05-17
+- Files added:
+  - `db/migrate/20260517072719_make_setlist_items_polymorphic.rb`
+  - `test/models/setlist_item_test.rb`
+- Files changed:
+  - `app/models/setlist_item.rb` — replaced `belongs_to :music` with `belongs_to :item, polymorphic: true`, added whitelist + key absence validations, added `music` / `music=` compatibility shim.
+  - `app/models/setlist.rb` — `items.includes(:music)` → `items.includes(:item)` in `#missa_slots`.
+  - `app/models/repertoire/music.rb` — added `has_many :setlist_items, as: :item, dependent: :destroy`.
+  - `app/controllers/setlist_items_controller.rb` — `#create` translates `music_id` param to `item_type` / `item_id`; dedup check now scoped to `item_type: "Repertoire::Music"`.
+  - `app/views/setlists/show.html.erb` and `app/views/setlists/public_show.html.erb` — `.includes(:music)` → `.includes(:item)` in fallback queries.
+- Test totals: 157 runs, 466 assertions, 0 failures, 0 errors, 0 skips.

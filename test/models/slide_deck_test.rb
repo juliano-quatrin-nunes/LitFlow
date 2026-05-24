@@ -118,6 +118,25 @@ class SlideDeckTest < ActiveSupport::TestCase
            "expected SlideDeck to register turbo broadcastable commit callbacks via broadcasts_to"
   end
 
+  test "editing a Music's slide_deck clears pptx_fingerprint on every Setlist whose items point at that Music" do
+    user = users(:user)
+    music = repertoire_musics(:one)
+    setlist_a = Setlist.create!(user: user, name: "A", setlist_type: "evento")
+    setlist_b = Setlist.create!(user: user, name: "B", setlist_type: "evento")
+    setlist_c = Setlist.create!(user: user, name: "C", setlist_type: "evento")
+    setlist_a.items.create!(item: music)
+    setlist_b.items.create!(item: music)
+    setlist_a.update_column(:pptx_fingerprint, "aaa")
+    setlist_b.update_column(:pptx_fingerprint, "bbb")
+    setlist_c.update_column(:pptx_fingerprint, "ccc")
+
+    music.slide_deck.update!(slides_json: music.slide_deck.slides_json + [ { "id" => "verse_2", "type" => "verse", "label" => "x", "lines" => [ "y" ] } ])
+
+    assert_nil setlist_a.reload.pptx_fingerprint, "setlist A (has item) should be cleared"
+    assert_nil setlist_b.reload.pptx_fingerprint, "setlist B (has item) should be cleared"
+    assert_equal "ccc", setlist_c.reload.pptx_fingerprint, "setlist C (no item) should be untouched"
+  end
+
   test "saving without slides_json or slide_sequence changes leaves pptx_fingerprint intact" do
     music = Repertoire::Music.create!(
       title: "Untouched Fingerprint Probe",

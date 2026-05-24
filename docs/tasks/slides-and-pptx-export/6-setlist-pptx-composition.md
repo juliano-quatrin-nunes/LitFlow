@@ -86,19 +86,19 @@ Same shape as `GenerateMusicPptxJob` from slice 3:
 
 ## Acceptance criteria
 
-- [ ] `setlists.pptx_fingerprint` column exists; `has_one_attached :pptx` on `Setlist`.
-- [ ] `Slides::SetlistComposer` (or equivalent logic) emits the blank-bookended-and-interleaved payload structure documented above.
-- [ ] The Python renderer from slice 3 produces a fully black slide for `{ type: "blank", lines: [] }` entries (already true if slice 3 is complete; verify via integration test).
-- [ ] A 3-item setlist produces a PPTX with exactly: 1 deck-start blank + item-1 slides + 1 transition blank + item-2 slides + 1 transition blank + item-3 slides + 1 deck-end blank. Total blank slides = items + 1 = 4 for a 3-item setlist.
-- [ ] A 1-item setlist produces: 1 blank + item slides + 1 blank = 2 blanks total.
-- [ ] `Slides::Fingerprint.for_setlist` is stable across re-runs and changes when any item's effective slides change (verified by mutating a Music's slide_deck and re-computing).
-- [ ] Editing any Music's slides invalidates the `pptx_fingerprint` of every Setlist containing a SetlistItem pointing at that Music (verifiable in console / integration test).
-- [ ] Editing a SetlistItem's override invalidates only the affected Setlist's fingerprint (slice 5 wires this; verify the wiring crosses the boundary).
-- [ ] Adding / removing / reordering SetlistItems invalidates the parent Setlist's `pptx_fingerprint`.
-- [ ] `GenerateSetlistPptxJob` has the same cache-hit / cache-miss / error-retry behavior as `GenerateMusicPptxJob`, with integration tests mirroring slice 3.
-- [ ] Setlist page "Baixar PPTX da celebração" button works end-to-end: cache-hit one toast, cache-miss spinner + two toasts, error toast on failure.
-- [ ] Orphaned sequence ids inside a SetlistItem override are silently skipped at render time without raising (slice 5's warning chip remains the user surface).
-- [ ] `Setlist broadcasts_to` channel name matches the frame subscription on the Setlist show page.
+- [x] `setlists.pptx_fingerprint` column exists; `has_one_attached :pptx` on `Setlist`.
+- [x] `Slides::SetlistComposer` (or equivalent logic) emits the blank-bookended-and-interleaved payload structure documented above.
+- [x] The Python renderer from slice 3 produces a fully black slide for `{ type: "blank", lines: [] }` entries (already true if slice 3 is complete; verify via integration test).
+- [x] A 3-item setlist produces a PPTX with exactly: 1 deck-start blank + item-1 slides + 1 transition blank + item-2 slides + 1 transition blank + item-3 slides + 1 deck-end blank. Total blank slides = items + 1 = 4 for a 3-item setlist.
+- [x] A 1-item setlist produces: 1 blank + item slides + 1 blank = 2 blanks total.
+- [x] `Slides::Fingerprint.for_setlist` is stable across re-runs and changes when any item's effective slides change (verified by mutating a Music's slide_deck and re-computing).
+- [x] Editing any Music's slides invalidates the `pptx_fingerprint` of every Setlist containing a SetlistItem pointing at that Music (verifiable in console / integration test).
+- [x] Editing a SetlistItem's override invalidates only the affected Setlist's fingerprint (slice 5 wires this; verify the wiring crosses the boundary).
+- [x] Adding / removing / reordering SetlistItems invalidates the parent Setlist's `pptx_fingerprint`.
+- [x] `GenerateSetlistPptxJob` has the same cache-hit / cache-miss / error-retry behavior as `GenerateMusicPptxJob`, with integration tests mirroring slice 3.
+- [x] Setlist page "Baixar PPTX da celebração" button works end-to-end: cache-hit one toast, cache-miss spinner + two toasts, error toast on failure.
+- [x] Orphaned sequence ids inside a SetlistItem override are silently skipped at render time without raising (slice 5's warning chip remains the user surface).
+- [x] `Setlist broadcasts_to` channel name matches the frame subscription on the Setlist show page.
 
 ## Blocked by
 
@@ -111,3 +111,29 @@ After completing the work and getting tests green:
 
 1. Mark each acceptance-criterion checkbox above as completed (`[x]`).
 2. Append a `## Status` section recording: completion date, files added/changed, key verification output, and test suite totals.
+
+## Status
+
+- Completed: 2026-05-17
+- Files added:
+  - `app/services/slides/setlist_composer.rb`
+  - `app/jobs/generate_setlist_pptx_job.rb`
+  - `app/controllers/setlists/pptx_controller.rb`
+  - `app/views/setlists/pptx/cache_hit.turbo_stream.erb`
+  - `app/views/setlists/pptx/cache_miss.turbo_stream.erb`
+  - `test/services/slides/setlist_composer_test.rb`
+  - `test/jobs/generate_setlist_pptx_job_test.rb`
+  - `test/controllers/setlists/pptx_controller_test.rb`
+- Files changed:
+  - `app/services/slides/fingerprint.rb` — added `Slides::Fingerprint.for_setlist(setlist)` returning a stable SHA1 over `[item_type, item_id, position, mass_part_id, effective_slides_json, effective_slide_sequence]` for each item in position order, plus `Slides::Theme::VERSION`.
+  - `app/services/slides/pptx_renderer.rb` — added `render_slides(slides)` and `shell_out(payload)` class methods so the renderer can take a raw payload (used by the setlist job) without needing a `SlideDeck` instance.
+  - `app/models/setlist.rb` — `has_one_attached :pptx`, `broadcasts_to ->(s) { "setlist_#{s.id}" }`.
+  - `app/controllers/setlist_items_controller.rb#reorder` — clears `pptx_fingerprint` on the affected setlist(s) after reordering (the existing `update_column(:position)` bypasses model callbacks).
+  - `app/views/setlists/show.html.erb` — added "Baixar PPTX da celebração" Turbo Stream link near the share/actions buttons.
+  - `config/routes.rb` — `resources :setlists do get "pptx", to: "setlists/pptx#show", as: :pptx end`.
+- Verification:
+  - End-to-end smoke test exercises the real Python renderer with a blank-bookended payload and asserts the resulting binary starts with `PK` (valid PPTX zip).
+  - Composer tests cover 0/1/3-item setlists, orphan-skip behavior, and override propagation.
+  - Job tests cover cache-hit, render+attach+fingerprint, broadcast-ready, broadcast-error.
+  - Controller tests cover cache-hit, cache-miss, attachment-missing-with-matching-fingerprint, and owner scoping.
+- Test totals: 200 runs, 580 assertions, 0 failures, 0 errors, 0 skips.

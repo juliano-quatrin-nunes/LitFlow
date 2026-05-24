@@ -62,4 +62,22 @@ class Repertoire::Musics::SlideDecksControllerTest < ActionDispatch::Integration
     assert_equal Digest::SHA1.hexdigest(new_cifra), deck.slides_generated_from
     assert_equal deck.slides_json.map { |s| s["id"] }, deck.slide_sequence
   end
+
+  test "regenerate uses content_raw from the request when provided (unsaved form edits)" do
+    deck = @music.slide_deck
+    original_db_content_raw = @music.content_raw
+    unsaved_cifra = "E\nLetra ainda não salva mas em edição"
+
+    post repertoire_music_regenerate_slide_deck_path(@music.author, @music),
+         params: { repertoire_music: { content_raw: unsaved_cifra } },
+         headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :success
+    deck.reload
+    # Slides should reflect the unsaved cifra, not the persisted one.
+    assert_includes deck.slides_json.first["lines"].join(" "), "ainda não salva"
+    assert_equal Digest::SHA1.hexdigest(unsaved_cifra), deck.slides_generated_from
+    # Music.content_raw stays untouched — only the form save will persist it.
+    assert_equal original_db_content_raw, @music.reload.content_raw
+  end
 end

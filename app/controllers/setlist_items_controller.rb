@@ -1,5 +1,5 @@
 class SetlistItemsController < ApplicationController
-  before_action :set_setlist_item, only: %i[update destroy]
+  before_action :set_setlist_item, only: %i[edit update destroy]
 
   def new
     @setlist = Current.user.setlists.find(params[:setlist_id])
@@ -17,12 +17,15 @@ class SetlistItemsController < ApplicationController
     @setlist = Current.user.setlists.find(params[:setlist_item][:setlist_id])
     @music = Repertoire::Music.find(params[:setlist_item][:music_id])
 
-    attrs = setlist_item_params
+    attrs = setlist_item_params.except(:music_id).merge(
+      item_type: "Repertoire::Music",
+      item_id: @music.id
+    )
     if attrs[:mass_part_id].blank? && @setlist.missa?
       attrs[:mass_part_id] = @music.mass_parts.first&.id
     end
 
-    if params[:force] != "true" && @setlist.items.exists?(music_id: @music.id)
+    if params[:force] != "true" && @setlist.items.exists?(item_type: "Repertoire::Music", item_id: @music.id)
       flash[:alert] = render_to_string(
         partial: "setlist_items/duplicate_flash",
         locals: { setlist: @setlist, music: @music, key: attrs[:key], mass_part_id: attrs[:mass_part_id] }
@@ -40,8 +43,14 @@ class SetlistItemsController < ApplicationController
     end
   end
 
+  def edit
+  end
+
   def update
-    if @setlist_item.update(setlist_item_update_params)
+    attrs = setlist_item_update_params.to_h
+    attrs.merge!(resolve_override_changes(params[:setlist_item]))
+
+    if @setlist_item.update(attrs)
       redirect_to setlist_path(@setlist_item.setlist), notice: "Item atualizado."
     else
       redirect_to setlist_path(@setlist_item.setlist), alert: "Não foi possível atualizar o item."
@@ -59,11 +68,13 @@ class SetlistItemsController < ApplicationController
     return head(:ok) if ids.empty?
 
     scoped = SetlistItem.joins(:setlist).where(setlists: { user_id: Current.user.id }, id: ids)
+    setlist_ids = scoped.distinct.pluck(:setlist_id)
 
     SetlistItem.transaction do
       scoped.find_each do |item|
         item.update_column(:position, ids.index(item.id) + 1)
       end
+      Setlist.where(id: setlist_ids).where.not(pptx_fingerprint: nil).update_all(pptx_fingerprint: nil)
     end
 
     head :ok
@@ -80,6 +91,34 @@ class SetlistItemsController < ApplicationController
   end
 
   def setlist_item_update_params
-    params.expect(setlist_item: [ :key, :mass_part_id, :position ])
+    params.fetch(:setlist_item, {}).permit(:key, :mass_part_id, :position)
+  end
+
+  def resolve_override_changes(raw)
+    return {} unless raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
+
+    changes = {}
+    if raw.key?(:slides_json_override_enabled)
+      changes[:slides_json_override] = if truthy?(raw[:slides_json_override_enabled])
+        parse_json_param(raw[:slides_json_override]) || @setlist_item.effective_slides_json.deep_dup
+      end
+    end
+    if raw.key?(:slide_sequence_override_enabled)
+      changes[:slide_sequence_override] = if truthy?(raw[:slide_sequence_override_enabled])
+        parse_json_param(raw[:slide_sequence_override]) || @setlist_item.effective_slide_sequence.deep_dup
+      end
+    end
+    changes
+  end
+
+  def truthy?(value)
+    ActiveModel::Type::Boolean.new.cast(value)
+  end
+
+  def parse_json_param(value)
+    return nil if value.blank?
+    JSON.parse(value)
+  rescue JSON::ParserError
+    nil
   end
 end

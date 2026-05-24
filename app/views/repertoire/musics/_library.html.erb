@@ -59,6 +59,10 @@
         <%= f.hidden_field :season,  value: current_season  if current_season %>
         <%= f.hidden_field :part,    value: current_part    if current_part %>
         <%= f.hidden_field :library, value: current_library if current_library != "all" %>
+        <% if mode == :select && setlist %>
+          <%= hidden_field_tag :setlist_id, setlist.id %>
+          <%= hidden_field_tag :mass_part_id, mass_part.id if mass_part %>
+        <% end %>
       <% end %>
     </div>
 

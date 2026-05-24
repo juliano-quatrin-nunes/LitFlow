@@ -45,7 +45,7 @@
       </section>
     <% end %>
 
-    <% unassigned = @setlist.items.includes(:music).where(mass_part_id: nil).order(:position) %>
+    <% unassigned = @setlist.items.includes(:item).where(mass_part_id: nil).order(:position) %>
     <% if unassigned.any? %>
       <section class="flex flex-col gap-3">
         <div class="flex items-center justify-between border-b border-border pb-1">
@@ -62,7 +62,7 @@
   </div>
 <% elsif @setlist.items.any? %>
   <div class="flex flex-col gap-3 mt-8">
-    <% @setlist.items.includes(:music).order(:position).each do |item| %>
+    <% @setlist.items.includes(:item).order(:position).each do |item| %>
       <%= render partial: "repertoire/musics/music_card", locals: { music: item.music, preferred_key: item.key } %>
     <% end %>
   </div>

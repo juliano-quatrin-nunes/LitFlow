@@ -27,6 +27,7 @@ class SlideDeck < ApplicationRecord
   broadcasts_to ->(deck) { "slide_deck_#{deck.id}" }
 
   after_save :clear_pptx_fingerprint_on_content_change
+  after_commit :clear_setlist_pptx_fingerprints_on_content_change, on: %i[update]
 
   def slides_json=(value)
     super(parse_jsonb_input(value))
@@ -50,5 +51,15 @@ class SlideDeck < ApplicationRecord
     return if pptx_fingerprint.nil?
 
     update_column(:pptx_fingerprint, nil)
+  end
+
+  def clear_setlist_pptx_fingerprints_on_content_change
+    return unless previous_changes.key?("slides_json") || previous_changes.key?("slide_sequence")
+    return unless Setlist.column_names.include?("pptx_fingerprint")
+
+    affected_ids = SetlistItem.where(item_type: slideable_type, item_id: slideable_id)
+                              .distinct
+                              .pluck(:setlist_id)
+    Setlist.where(id: affected_ids).where.not(pptx_fingerprint: nil).update_all(pptx_fingerprint: nil)
   end
 end

@@ -45,6 +45,18 @@
     <%= render "repertoire/musics/slide_decks/form_section",
           music: music,
           form: form %>
+  <% else %>
+    <div data-role="slide-section-placeholder"
+         class="mt-6 rounded-lg border border-dashed border-border bg-muted/30 px-4 py-5 flex items-start gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground mt-0.5 shrink-0"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/><path d="M12 16v5"/></svg>
+      <div class="flex flex-col gap-1 text-sm">
+        <strong class="text-foreground">Slides</strong>
+        <span class="text-muted-foreground">
+          Os slides serão gerados automaticamente a partir da cifra ao salvar.
+          Você poderá revisar tipos, rótulos e linhas em seguida.
+        </span>
+      </div>
+    </div>
   <% end %>
 
   <div class="mt-8">

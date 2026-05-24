@@ -1,0 +1,76 @@
+<%= ui.header class: "mb-6" do %>
+  <%= ui.breadcrumbs do %>
+    <%= ui.breadcrumb "Meus Roteiros", url: setlists_path %>
+    <%= ui.breadcrumb @setlist_item.setlist.name, url: setlist_path(@setlist_item.setlist) %>
+    <%= ui.breadcrumb "Editar Item" %>
+  <% end %>
+
+  <h1 class="font-bold text-2xl tracking-tight text-foreground mt-2">
+    <%= @setlist_item.music&.title || "Item" %>
+  </h1>
+<% end %>
+
+<%= form_with model: @setlist_item, url: setlist_item_path(@setlist_item), method: :patch, class: "flex flex-col gap-6" do |f| %>
+  <%= ui.card class: "p-4 flex flex-col gap-4" do %>
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Detalhes</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <label class="flex flex-col gap-1 text-sm">
+        <span class="font-medium">Tom</span>
+        <%= f.text_field :key, class: "border border-border rounded-md px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40" %>
+      </label>
+      <label class="flex flex-col gap-1 text-sm">
+        <span class="font-medium">Parte da Missa</span>
+        <%= f.collection_select :mass_part_id, Repertoire::MassPart.order(:position), :id, :name, { include_blank: "Nenhuma" }, class: "border border-border rounded-md px-3 py-2 bg-background" %>
+      </label>
+    </div>
+  <% end %>
+
+  <%= ui.card class: "p-4 flex flex-col gap-4" do %>
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Personalizar slides</h2>
+    <p class="text-xs text-muted-foreground">
+      Por padrão, este item usa os slides da música. Ative as opções abaixo para personalizar somente nesta celebração.
+    </p>
+
+    <%= tag.details(class: "border border-border rounded-lg", open: @setlist_item.slides_json_override.present?) do %>
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium select-none flex items-center gap-2">
+        <%= f.check_box :slides_json_override_enabled,
+                        { checked: @setlist_item.slides_json_override.present?,
+                          data: { confirm_off: "Suas customizações serão perdidas. Continuar?" } },
+                        "1", "0" %>
+        Personalizar conteúdo dos slides
+      </summary>
+      <% if @setlist_item.slides_json_override.present? %>
+        <div class="px-4 pb-4 pt-2">
+          <%= render "repertoire/musics/slide_decks/section_editor",
+                slide_deck: @setlist_item.item.slide_deck,
+                sections: @setlist_item.effective_slides_json,
+                hidden_field_name: "setlist_item[slides_json_override]" %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%= tag.details(class: "border border-border rounded-lg", open: @setlist_item.slide_sequence_override.present?) do %>
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium select-none flex items-center gap-2">
+        <%= f.check_box :slide_sequence_override_enabled,
+                        { checked: @setlist_item.slide_sequence_override.present?,
+                          data: { confirm_off: "Suas customizações serão perdidas. Continuar?" } },
+                        "1", "0" %>
+        Personalizar sequência
+      </summary>
+      <% if @setlist_item.slide_sequence_override.present? %>
+        <div class="px-4 pb-4 pt-2">
+          <%= render "repertoire/musics/slide_decks/sequence_editor",
+                slide_deck: @setlist_item.item.slide_deck,
+                sections: @setlist_item.effective_slides_json,
+                sequence: @setlist_item.effective_slide_sequence,
+                hidden_field_name: "setlist_item[slide_sequence_override]" %>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="flex items-center justify-end gap-3">
+    <%= link_to "Cancelar", setlist_path(@setlist_item.setlist), class: "text-sm text-muted-foreground hover:text-foreground" %>
+    <%= f.submit "Salvar", class: "inline-flex items-center gap-1.5 text-sm px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" %>
+  </div>
+<% end %>

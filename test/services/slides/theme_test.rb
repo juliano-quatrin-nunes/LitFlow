@@ -2,7 +2,7 @@ require "test_helper"
 
 class Slides::ThemeTest < ActiveSupport::TestCase
   test "exposes VERSION constant" do
-    assert_equal "v1", Slides::Theme::VERSION
+    assert_equal "v1.2", Slides::Theme::VERSION
   end
 
   test "V1 has the expected appearance constants" do
@@ -14,8 +14,16 @@ class Slides::ThemeTest < ActiveSupport::TestCase
     assert_equal :center, Slides::Theme::V1::H_ALIGN
     assert_equal :middle, Slides::Theme::V1::V_ALIGN
     assert_equal 0.05, Slides::Theme::V1::MARGINS
-    assert_equal 32, Slides::Theme::V1::MAX_CHARS_PER_LINE
+    assert_equal 28, Slides::Theme::V1::MAX_CHARS_PER_LINE
     assert_equal 10, Slides::Theme::V1::MAX_VISUAL_LINES
     assert_equal [ "chorus" ], Slides::Theme::V1::BOLD_SECTION_TYPES
+  end
+
+  test "V1 declares a CASE setting accepted by the renderer" do
+    assert_includes %w[normal upper_case lower_case], Slides::Theme::V1::CASE
+  end
+
+  test "to_h forwards the case setting to the renderer payload" do
+    assert_equal Slides::Theme::V1::CASE, Slides::Theme::V1.to_h["case"]
   end
 end

@@ -1,9 +1,8 @@
 import { Controller } from '@hotwired/stimulus'
 
-const OVERFLOW_THRESHOLD = 32
-
 export default class SlideSectionEditorController extends Controller {
   static targets = ['linesField', 'hints', 'labelField']
+  static values = { maxChars: Number }
 
   connect () {
     this.refresh()
@@ -11,11 +10,12 @@ export default class SlideSectionEditorController extends Controller {
 
   refresh () {
     if (!this.hasLinesFieldTarget || !this.hasHintsTarget) return
+    if (!this.maxCharsValue) return
 
     const lines = this.linesFieldTarget.value.split('\n')
     const overflowing = []
     lines.forEach((line, idx) => {
-      if (line.length > OVERFLOW_THRESHOLD) overflowing.push(idx + 1)
+      if (line.length > this.maxCharsValue) overflowing.push(idx + 1)
     })
 
     this.hintsTarget.innerHTML = ''
@@ -37,12 +37,33 @@ export default class SlideSectionEditorController extends Controller {
     this.hintsTarget.appendChild(chip)
   }
 
-  syncTabLabel () {
+  syncLabel () {
     if (!this.hasLabelFieldTarget) return
     const id = this.element.dataset.sectionId
     if (!id) return
-    const tab = document.querySelector(`[data-tab-for="${id}"] [data-tab-label]`)
-    if (tab) tab.textContent = this.labelFieldTarget.value || id
+    const value = this.labelFieldTarget.value || id
+
+    document.querySelectorAll(`[data-tab-for="${id}"] [data-tab-label]`).forEach((el) => {
+      el.textContent = value
+    })
+    document.querySelectorAll(`[data-sortable-id="${id}"] [data-sequence-chip-label]`).forEach((el) => {
+      el.textContent = value
+    })
+  }
+
+  syncType (event) {
+    const id = this.element.dataset.sectionId
+    if (!id) return
+    const value = event?.currentTarget?.value ||
+      this.element.querySelector('[data-slide-section-editor-target="typeField"]')?.value
+    if (!value) return
+
+    document.querySelectorAll(`[data-tab-for="${id}"] [data-tab-type]`).forEach((el) => {
+      el.textContent = value
+    })
+    document.querySelectorAll(`[data-sortable-id="${id}"] [data-sequence-chip-type]`).forEach((el) => {
+      el.textContent = value
+    })
   }
 
   #formatList (numbers) {

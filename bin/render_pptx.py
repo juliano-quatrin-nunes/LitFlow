@@ -61,12 +61,23 @@ def add_blank_slide(prs, bg_color):
     return slide
 
 
+def apply_case(text, case_setting):
+    if case_setting == "upper_case":
+        return text.upper()
+    if case_setting == "lower_case":
+        return text.lower()
+    return text
+
+
 def render_slide(prs, theme, entry, bg_color, text_color, h_align, v_align):
     slide = add_blank_slide(prs, bg_color)
 
     lines = entry.get("lines") or []
     if not lines:
         return  # Blank slide already has the background fill
+
+    case_setting = theme.get("case", "normal")
+    lines = [apply_case(str(line), case_setting) for line in lines]
 
     margin = float(theme.get("margins", 0.05))
     aspect_w, aspect_h = theme.get("aspect", [10.0, 7.5])

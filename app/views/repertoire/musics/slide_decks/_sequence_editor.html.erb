@@ -25,8 +25,8 @@
           </button>
 
           <div class="flex flex-1 items-center gap-2 min-w-0">
-            <span class="font-medium text-sm truncate"><%= section[:label] %></span>
-            <span class="text-[10px] uppercase tracking-wide text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+            <span class="font-medium text-sm truncate" data-sequence-chip-label><%= section[:label] %></span>
+            <span class="text-[10px] uppercase tracking-wide text-muted-foreground bg-muted px-1.5 py-0.5 rounded" data-sequence-chip-type>
               <%= section[:type] %>
             </span>
             <span class="text-xs text-muted-foreground font-mono"><%= id %></span>

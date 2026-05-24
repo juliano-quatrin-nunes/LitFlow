@@ -130,6 +130,33 @@ class Repertoire::MusicsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: other.title
   end
 
+  test "new page surfaces a slide section explaining slides will be generated on save" do
+    sign_in_as users(:user)
+
+    get new_repertoire_music_url
+
+    assert_response :success
+    assert_select "[data-role=slide-section-placeholder]"
+    assert_match "slides", response.body
+  end
+
+  test "create redirects to edit so the user can refine slides immediately" do
+    sign_in_as users(:user)
+    author = repertoire_authors(:padre_jonas)
+
+    post repertoire_musics_url, params: {
+      repertoire_music: {
+        title: "Música Nova com Slides",
+        author_id: author.id,
+        original_key: "E",
+        content_raw: "[E]linha"
+      }
+    }
+
+    music = Repertoire::Music.find_by!(title: "Música Nova com Slides")
+    assert_redirected_to repertoire_music_by_author_edit_path(music.author, music)
+  end
+
   test "edit page renders the slide editor inline when slide_deck has slides" do
     sign_in_as users(:user)
     music = repertoire_musics(:one)

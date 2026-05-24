@@ -35,6 +35,8 @@ class Repertoire::Music < ApplicationRecord
   has_many :music_mass_parts, class_name: "Repertoire::MusicMassPart", dependent: :destroy
   has_many :mass_parts, through: :music_mass_parts
 
+  has_many :setlist_items, as: :item, dependent: :destroy
+
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: { scope: :author_id }
 

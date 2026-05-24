@@ -28,9 +28,17 @@ class Repertoire::Musics::SlideDecksController < ApplicationController
   end
 
   def regenerate
-    slides = Slides::Extractor.call(@music.content_json)
+    source_raw = params.dig(:repertoire_music, :content_raw).presence || @music.content_raw
+    source_json = if source_raw == @music.content_raw
+      @music.content_json
+    else
+      parsed = Repertoire::MusicParserService.call(source_raw)
+      parsed[:json]
+    end
+
+    slides = Slides::Extractor.call(source_json)
     sequence = Slides::Extractor.default_sequence(slides)
-    generated_from = @music.content_raw.present? ? Digest::SHA1.hexdigest(@music.content_raw) : nil
+    generated_from = source_raw.present? ? Digest::SHA1.hexdigest(source_raw) : nil
 
     @music.slide_deck.update!(
       slides_json: slides,

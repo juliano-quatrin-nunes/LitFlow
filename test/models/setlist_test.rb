@@ -3,15 +3,16 @@
 # Table name: setlists
 # Database name: primary
 #
-#  id           :bigint           not null, primary key
-#  date         :date
-#  location     :string
-#  name         :string           not null
-#  setlist_type :integer          default("missa"), not null
-#  uid          :string
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  user_id      :bigint           not null
+#  id               :bigint           not null, primary key
+#  date             :date
+#  location         :string
+#  name             :string           not null
+#  pptx_fingerprint :string
+#  setlist_type     :integer          default("missa"), not null
+#  uid              :string
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  user_id          :bigint           not null
 #
 # Indexes
 #
@@ -73,5 +74,36 @@ class SetlistTest < ActiveSupport::TestCase
 
     setlist.update!(name: "Renomeada")
     assert_equal uid, setlist.reload.uid
+  end
+
+  test "items_with_orphaned_sequence_ids returns empty when no overrides reference unknown ids" do
+    setlist = Setlist.create!(user: @user, name: "Limpa", setlist_type: "missa")
+    music = repertoire_musics(:one)
+    setlist.items.create!(item: music)
+
+    assert_equal [], setlist.items_with_orphaned_sequence_ids
+  end
+
+  test "items_with_orphaned_sequence_ids returns items whose override references unknown ids" do
+    setlist = Setlist.create!(user: @user, name: "Quebrada", setlist_type: "missa")
+    music = repertoire_musics(:one)
+    orphan = setlist.items.create!(
+      item: music,
+      slide_sequence_override: [ "verse_1", "ghost_section" ]
+    )
+    ok = setlist.items.create!(item: music)
+
+    affected = setlist.items_with_orphaned_sequence_ids
+    assert_equal [ orphan.id ], affected.map(&:id)
+    refute_includes affected.map(&:id), ok.id
+  end
+
+  test "items_with_orphaned_sequence_ids returns every item when all overrides are broken" do
+    setlist = Setlist.create!(user: @user, name: "Tudo Quebrado", setlist_type: "missa")
+    music = repertoire_musics(:one)
+    a = setlist.items.create!(item: music, slide_sequence_override: [ "ghost_a" ])
+    b = setlist.items.create!(item: music, slide_sequence_override: [ "ghost_b" ])
+
+    assert_equal [ a.id, b.id ].sort, setlist.items_with_orphaned_sequence_ids.map(&:id).sort
   end
 end

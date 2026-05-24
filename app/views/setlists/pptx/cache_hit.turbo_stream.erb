@@ -1,0 +1,10 @@
+<%= turbo_stream.append "toasts" do %>
+  <%= render partial: "shared/toasts/toast",
+             locals: {
+               title: "Pronto!",
+               description: "O download do PPTX da celebração começou.",
+               kind: "success",
+               download_url: @download_url,
+               filename: @filename
+             } %>
+<% end %>

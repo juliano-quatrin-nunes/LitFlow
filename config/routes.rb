@@ -11,8 +11,10 @@ Rails.application.routes.draw do
 
   resources :saved_musics, only: [ :index, :create, :update, :destroy ]
   get "p/setlists/:uid", to: "setlists#public_show", as: :public_setlist
-  resources :setlists
-  resources :setlist_items, only: [ :new, :create, :update, :destroy ] do
+  resources :setlists do
+    get "pptx", to: "setlists/pptx#show", as: :pptx
+  end
+  resources :setlist_items, only: [ :new, :create, :edit, :update, :destroy ] do
     collection do
       patch :reorder
     end

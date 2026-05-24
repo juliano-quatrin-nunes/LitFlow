@@ -1,6 +1,6 @@
 module Slides
   module Theme
-    VERSION = "v1"
+    VERSION = "v1.2"
 
     module V1
       ASPECT = [ 10.0, 7.5 ].freeze
@@ -11,9 +11,10 @@ module Slides
       H_ALIGN = :center
       V_ALIGN = :middle
       MARGINS = 0.05
-      MAX_CHARS_PER_LINE = 32
+      MAX_CHARS_PER_LINE = 28
       MAX_VISUAL_LINES = 10
       BOLD_SECTION_TYPES = [ "chorus" ].freeze
+      CASE = "upper_case" # "normal" | "upper_case" | "lower_case"
 
       def self.to_h
         {
@@ -25,7 +26,8 @@ module Slides
           "h_align" => H_ALIGN.to_s,
           "v_align" => V_ALIGN.to_s,
           "margins" => MARGINS,
-          "bold_section_types" => BOLD_SECTION_TYPES
+          "bold_section_types" => BOLD_SECTION_TYPES,
+          "case" => CASE
         }
       end
     end
