@@ -27,10 +27,10 @@ End-to-end DOCX export for individual songs. Reuses the infrastructure and patte
 
 ## Acceptance criteria
 
-- [ ] `GenerateMusicCifraJob` handles `format: :docx`.
-- [ ] Clicking "DOCX (Cifra)" triggers a "Gerando..." toast.
-- [ ] The downloaded DOCX uses Roboto Mono and correctly bolds chords.
-- [ ] The DOCX layout matches the PDF layout.
+- [x] `GenerateMusicCifraJob` handles `format: :docx`.
+- [x] Clicking "DOCX (Cifra)" triggers a "Gerando..." toast.
+- [x] The downloaded DOCX uses Roboto Mono and correctly bolds chords.
+- [x] The DOCX layout matches the PDF layout.
 
 ## Blocked by
 

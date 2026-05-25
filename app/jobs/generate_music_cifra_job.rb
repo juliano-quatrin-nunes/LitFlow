@@ -5,12 +5,18 @@ class GenerateMusicCifraJob < ApplicationJob
   DOCX_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document".freeze
   VERSION = "v1".freeze # Formatter version for fingerprinting
 
-  def perform(music_id, target_key)
+  def perform(music_id, target_key, options = {})
     @music = Repertoire::Music.find(music_id)
     @target_key = target_key
+    @requested_format = options[:format]&.to_sym || :pdf
 
     expected = calculate_fingerprint
-    return if @music.cifra_fingerprint == expected && @music.cifra_pdf.attached? && @music.cifra_docx.attached?
+    
+    # Check cache
+    if @music.cifra_fingerprint == expected && @music.cifra_pdf.attached? && @music.cifra_docx.attached?
+      broadcast_ready
+      return
+    end
 
     # 1. Prepare payload from content_json
     current_content = @music.content_json
@@ -60,7 +66,9 @@ class GenerateMusicCifraJob < ApplicationJob
   end
 
   def broadcast_ready
-    pdf_url = Rails.application.routes.url_helpers.rails_blob_path(@music.cifra_pdf, disposition: "attachment", only_path: true)
+    attachment = @requested_format == :docx ? @music.cifra_docx : @music.cifra_pdf
+    download_url = Rails.application.routes.url_helpers.rails_blob_path(attachment, disposition: "attachment", only_path: true)
+    ext = @requested_format.to_s
 
     Turbo::StreamsChannel.broadcast_append_to(
       stream_name,
@@ -68,10 +76,10 @@ class GenerateMusicCifraJob < ApplicationJob
       partial: "shared/toasts/toast",
       locals: {
         title: "Cifra pronta!",
-        description: "O download do PDF começou.",
+        description: "O download do #{ext.upcase} começou.",
         kind: "success",
-        download_url: pdf_url,
-        filename: filename("pdf")
+        download_url: download_url,
+        filename: filename(ext)
       }
     )
   end

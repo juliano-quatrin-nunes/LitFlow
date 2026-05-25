@@ -18,7 +18,7 @@ The work is broken into 6 vertical slices (tracer bullets):
 3. **[3-music-pdf-export.md](./3-music-pdf-export.md)** (DONE)
    End-to-end PDF export for individual songs, including background jobs, controllers, and UI integration in the "Ações" dropdown.
 
-4. **[4-music-docx-export.md](./4-music-docx-export.md)** (AFK)
+4. **[4-music-docx-export.md](./4-music-docx-export.md)** (DONE)
    End-to-end DOCX export for individual songs, reusing the infrastructure from slice 3.
 
 5. **[5-setlist-pdf-export.md](./5-setlist-pdf-export.md)** (AFK)

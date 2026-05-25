@@ -27,7 +27,7 @@ import sys
 import io
 import os
 from docx import Document
-from docx.shared import Pt
+from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 def render(payload):
@@ -35,6 +35,13 @@ def render(payload):
     sections = payload.get("sections", [])
     
     doc = Document()
+    
+    # Set Narrow Margins (0.1 inch)
+    for section in doc.sections:
+        section.top_margin = Inches(0.1)
+        section.bottom_margin = Inches(0.1)
+        section.left_margin = Inches(0.1)
+        section.right_margin = Inches(0.1)
     
     # Title - Bold, Left Aligned
     p = doc.add_paragraph()

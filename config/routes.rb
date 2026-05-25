@@ -41,6 +41,7 @@ Rails.application.routes.draw do
       post "slide_deck/regenerate", to: "musics/slide_decks#regenerate", as: :regenerate_slide_deck
       get "pptx", to: "musics/pptx#show", as: :pptx
       get "cifra_pdf", to: "musics/cifra_pdf#show", as: :cifra_pdf
+      get "cifra_docx", to: "musics/cifra_docx#show", as: :cifra_docx
     end
   end
 
