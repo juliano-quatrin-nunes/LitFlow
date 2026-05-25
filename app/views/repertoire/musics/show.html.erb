@@ -85,10 +85,12 @@
           <%= ui.dropdown_title "Copiar" %>
 
           <textarea id="music-raw-content" class="hidden"><%= @music.content_raw %></textarea>
+          <div id="music-html-content" class="hidden"><%= raw Repertoire::CifraFormatterService.as_html(@content_json) %></div>
           <%= ui.dropdown_link "#", data: { 
                       controller: "clipboard", 
                       action: "clipboard#copy", 
                       clipboard_source_id_value: "music-raw-content",
+                      clipboard_html_source_id_value: "music-html-content",
                       clipboard_success_text_value: "Copiado!" 
                     } do %>
             <div class="flex items-center gap-2">
