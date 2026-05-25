@@ -1,4 +1,5 @@
 <div data-controller="music-view-mode" data-music-view-mode-active-class="bg-secondary text-secondary-foreground shadow-sm">
+  <%= turbo_stream_from "music_#{@music.id}" %>
   <%= turbo_frame_tag "music_display", data: { turbo_action: "advance" } do %>
     <%= ui.header class: "mb-8" do %>
     <div class="flex flex-col gap-1">
@@ -111,15 +112,18 @@
 
           <%= ui.dropdown_divider %>
           <%= ui.dropdown_title "Exportar" %>
-          <%= ui.dropdown_link disabled: true do %>
-            <div class="flex items-center justify-between w-full">
-              <span class="flex items-center gap-2">
+          <li class="dropdown__item">
+            <%= button_to repertoire_music_cifra_pdf_path(@music.author, @music),
+                          params: { key: @current_key },
+                          method: :get,
+                          form: { data: { turbo_stream: true } },
+                          class: "dropdown__link w-full text-left" do %>
+              <div class="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
                 PDF (Cifra)
-              </span>
-              <%= ui.badge "Em breve", size: :xs %>
-            </div>
-          <% end %>
+              </div>
+            <% end %>
+          </li>
           <li class="dropdown__item">
             <%= button_to repertoire_music_pptx_path(@music.author, @music),
                           method: :get,

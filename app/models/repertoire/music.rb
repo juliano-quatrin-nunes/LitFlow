@@ -3,21 +3,23 @@
 # Table name: repertoire_musics
 # Database name: primary
 #
-#  id           :bigint           not null, primary key
-#  content_json :jsonb
-#  content_raw  :text
-#  original_key :string
-#  slug         :string
-#  title        :string
-#  youtube_url  :string
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  author_id    :bigint           not null
+#  id                :bigint           not null, primary key
+#  cifra_fingerprint :string
+#  content_json      :jsonb
+#  content_raw       :text
+#  original_key      :string
+#  slug              :string
+#  title             :string
+#  youtube_url       :string
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  author_id         :bigint           not null
 #
 # Indexes
 #
-#  index_repertoire_musics_on_author_id  (author_id)
-#  index_repertoire_musics_on_slug       (slug) UNIQUE
+#  index_repertoire_musics_on_author_id          (author_id)
+#  index_repertoire_musics_on_cifra_fingerprint  (cifra_fingerprint)
+#  index_repertoire_musics_on_slug               (slug) UNIQUE
 #
 # Foreign Keys
 #
@@ -36,6 +38,9 @@ class Repertoire::Music < ApplicationRecord
   has_many :mass_parts, through: :music_mass_parts
 
   has_many :setlist_items, as: :item, dependent: :destroy
+
+  has_one_attached :cifra_pdf
+  has_one_attached :cifra_docx
 
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: { scope: :author_id }

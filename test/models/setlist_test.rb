@@ -3,21 +3,23 @@
 # Table name: setlists
 # Database name: primary
 #
-#  id               :bigint           not null, primary key
-#  date             :date
-#  location         :string
-#  name             :string           not null
-#  pptx_fingerprint :string
-#  setlist_type     :integer          default("missa"), not null
-#  uid              :string
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  user_id          :bigint           not null
+#  id                :bigint           not null, primary key
+#  cifra_fingerprint :string
+#  date              :date
+#  location          :string
+#  name              :string           not null
+#  pptx_fingerprint  :string
+#  setlist_type      :integer          default("missa"), not null
+#  uid               :string
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  user_id           :bigint           not null
 #
 # Indexes
 #
-#  index_setlists_on_uid      (uid) UNIQUE
-#  index_setlists_on_user_id  (user_id)
+#  index_setlists_on_cifra_fingerprint  (cifra_fingerprint)
+#  index_setlists_on_uid                (uid) UNIQUE
+#  index_setlists_on_user_id            (user_id)
 #
 # Foreign Keys
 #

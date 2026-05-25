@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_17_073334) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_25_113524) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -100,6 +100,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_073334) do
 
   create_table "repertoire_musics", force: :cascade do |t|
     t.bigint "author_id", null: false
+    t.string "cifra_fingerprint"
     t.jsonb "content_json"
     t.text "content_raw"
     t.datetime "created_at", null: false
@@ -109,6 +110,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_073334) do
     t.datetime "updated_at", null: false
     t.string "youtube_url"
     t.index ["author_id"], name: "index_repertoire_musics_on_author_id"
+    t.index ["cifra_fingerprint"], name: "index_repertoire_musics_on_cifra_fingerprint"
     t.index ["slug"], name: "index_repertoire_musics_on_slug", unique: true
   end
 
@@ -149,6 +151,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_073334) do
   end
 
   create_table "setlists", force: :cascade do |t|
+    t.string "cifra_fingerprint"
     t.datetime "created_at", null: false
     t.date "date"
     t.string "location"
@@ -158,6 +161,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_073334) do
     t.string "uid"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["cifra_fingerprint"], name: "index_setlists_on_cifra_fingerprint"
     t.index ["uid"], name: "index_setlists_on_uid", unique: true
     t.index ["user_id"], name: "index_setlists_on_user_id"
   end

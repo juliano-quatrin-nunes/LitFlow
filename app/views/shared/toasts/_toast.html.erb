@@ -16,9 +16,9 @@
     <a href="<%= download_url %>"
        download="<%= filename %>"
        data-controller="auto-download"
-       class="hidden"
-       aria-hidden="true"
-       tabindex="-1">
+       class="mt-2 inline-flex items-center justify-center rounded-md bg-accent px-3 py-1 text-xs font-medium text-accent-foreground hover:bg-accent/90 transition-colors"
+       aria-hidden="false">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download mr-1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
       Baixar <%= filename %>
     </a>
   <% end %>
