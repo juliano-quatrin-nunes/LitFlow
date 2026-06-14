@@ -28,6 +28,8 @@
 class Repertoire::Music < ApplicationRecord
   include Slideable
 
+  DEFAULT_AUTHOR_NAME = "Sem autor"
+
   belongs_to :author, class_name: "Repertoire::Author"
   accepts_nested_attributes_for :slide_deck, update_only: true
 
@@ -46,6 +48,7 @@ class Repertoire::Music < ApplicationRecord
   validates :slug, presence: true, uniqueness: { scope: :author_id }
 
   before_validation :generate_slug, if: -> { title.present? && slug.blank? }
+  before_validation :ensure_author, if: -> { author.blank? }
 
   before_save :parse_content
 
@@ -88,6 +91,10 @@ class Repertoire::Music < ApplicationRecord
 
   def generate_slug
     self.slug = title.parameterize
+  end
+
+  def ensure_author
+    self.author = Repertoire::Author.find_or_create_by!(name: DEFAULT_AUTHOR_NAME)
   end
 
   def parse_content
