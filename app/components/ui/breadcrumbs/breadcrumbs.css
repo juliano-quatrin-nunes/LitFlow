@@ -10,10 +10,4 @@
   .breadcrumbs__item--active {
     @apply text-foreground font-medium pointer-events-none;
   }
-
-  /* Add separator between items */
-  .breadcrumbs__item:not(:last-child):after {
-    content: "/";
-    @apply mx-2 text-muted-foreground/50 font-normal;
-  }
 }
