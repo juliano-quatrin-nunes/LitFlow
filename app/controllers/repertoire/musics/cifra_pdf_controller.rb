@@ -11,7 +11,7 @@ class Repertoire::Musics::CifraPdfController < ApplicationController
         if @music.cifra_fingerprint == expected_fingerprint && @music.cifra_pdf.attached?
           # Cache hit: Broadcast the ready toast which triggers the download
           pdf_url = helpers.rails_blob_path(@music.cifra_pdf, disposition: "attachment", only_path: true)
-          filename = "#{@music.slug}.pdf"
+          filename = "#{@music.title.parameterize}.pdf"
 
           render turbo_stream: turbo_stream.append("toasts", partial: "shared/toasts/toast", locals: {
             title: "Pronto!",

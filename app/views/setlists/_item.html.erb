@@ -9,7 +9,7 @@
   </button>
 
   <div class="flex-1 min-w-0">
-    <%= render partial: "repertoire/musics/music_card", locals: { music: item.music, preferred_key: item.key } %>
+    <%= render partial: "repertoire/musics/music_card", locals: { music: item.music, preferred_key: item.key, setlist_id: item.setlist_id } %>
   </div>
 
   <div class="shrink-0 flex items-center justify-center pl-1">

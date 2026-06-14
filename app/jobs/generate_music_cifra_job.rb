@@ -62,7 +62,7 @@ class GenerateMusicCifraJob < ApplicationJob
   end
 
   def filename(ext)
-    "#{@music.slug || "music-#{@music.id}"}.#{ext}"
+    "#{@music.title.parameterize || "music-#{@music.id}"}.#{ext}"
   end
 
   def broadcast_ready
@@ -70,8 +70,8 @@ class GenerateMusicCifraJob < ApplicationJob
     download_url = Rails.application.routes.url_helpers.rails_blob_path(attachment, disposition: "attachment", only_path: true)
     ext = @requested_format.to_s
 
-    Turbo::StreamsChannel.broadcast_append_to(
-      stream_name,
+    @music.broadcast_append_to(
+      @music,
       target: "toasts",
       partial: "shared/toasts/toast",
       locals: {
@@ -82,9 +82,5 @@ class GenerateMusicCifraJob < ApplicationJob
         filename: filename(ext)
       }
     )
-  end
-
-  def stream_name
-    "music_#{@music.id}"
   end
 end

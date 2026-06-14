@@ -17,6 +17,18 @@ class SetlistItemsController < ApplicationController
     @setlist = Current.user.setlists.find(params[:setlist_item][:setlist_id])
     @music = Repertoire::Music.find(params[:setlist_item][:music_id])
 
+    existing_item = @setlist.items.find_by(item_type: "Repertoire::Music", item_id: @music.id)
+
+    if params[:update_key] == "true" && existing_item
+      if existing_item.update(key: params[:setlist_item][:key])
+        path = repertoire_music_by_author_show_path(@music.author, @music, setlist_id: @setlist.id)
+        redirect_to path, notice: "Tom da música atualizado no roteiro \"#{@setlist.name}\"."
+      else
+        redirect_to repertoire_music_by_author_show_path(@music.author, @music, setlist_id: @setlist.id), alert: "Não foi possível atualizar o tom no roteiro."
+      end
+      return
+    end
+
     attrs = setlist_item_params.except(:music_id).merge(
       item_type: "Repertoire::Music",
       item_id: @music.id
@@ -25,10 +37,16 @@ class SetlistItemsController < ApplicationController
       attrs[:mass_part_id] = @music.mass_parts.first&.id
     end
 
-    if params[:force] != "true" && @setlist.items.exists?(item_type: "Repertoire::Music", item_id: @music.id)
+    if params[:force] != "true" && existing_item
       flash[:alert] = render_to_string(
         partial: "setlist_items/duplicate_flash",
-        locals: { setlist: @setlist, music: @music, key: attrs[:key], mass_part_id: attrs[:mass_part_id] }
+        locals: {
+          setlist: @setlist,
+          music: @music,
+          key: attrs[:key],
+          mass_part_id: attrs[:mass_part_id],
+          existing_item: existing_item
+        }
       )
       redirect_back(fallback_location: repertoire_music_by_author_show_path(@music.author, @music))
       return
@@ -51,7 +69,11 @@ class SetlistItemsController < ApplicationController
     attrs.merge!(resolve_override_changes(params[:setlist_item]))
 
     if @setlist_item.update(attrs)
-      redirect_to setlist_path(@setlist_item.setlist), notice: "Item atualizado."
+      if params[:from_music_page] == "true"
+        redirect_to repertoire_music_by_author_show_path(@setlist_item.music.author, @setlist_item.music, setlist_id: @setlist_item.setlist_id), notice: "Tom atualizado no roteiro."
+      else
+        redirect_to setlist_path(@setlist_item.setlist), notice: "Item atualizado."
+      end
     else
       redirect_to setlist_path(@setlist_item.setlist), alert: "Não foi possível atualizar o item."
     end

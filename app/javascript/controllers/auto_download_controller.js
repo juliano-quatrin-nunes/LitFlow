@@ -5,14 +5,15 @@ export default class extends Controller {
     if (this.element.dataset.autoDownloadFired === "true") return
     this.element.dataset.autoDownloadFired = "true"
 
-    // If it's a hidden anchor, try to click it.
-    // Some browsers block .click() if not user-initiated.
-    // We can also try window.location.assign if it's a direct link.
-    const url = this.element.getAttribute("href")
-    if (url) {
-      window.location.assign(url)
-    } else {
-      this.element.click()
-    }
+    // Small delay to ensure browser is ready and not blocking popups/downloads
+    setTimeout(() => {
+      const url = this.element.getAttribute("href")
+      if (url) {
+        // Try direct assignment first as it's more reliable for Active Storage downloads
+        window.location.assign(url)
+      } else {
+        this.element.click()
+      }
+    }, 100)
   }
 }

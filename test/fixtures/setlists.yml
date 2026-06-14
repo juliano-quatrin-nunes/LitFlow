@@ -1,0 +1,11 @@
+one:
+  user: user
+  name: "Missa de Domingo"
+  setlist_type: missa
+  uid: "uid-setlist-one"
+
+two:
+  user: user
+  name: "Ensaio Banda"
+  setlist_type: ensaio
+  uid: "uid-setlist-two"

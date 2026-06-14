@@ -51,38 +51,49 @@ class CifraPDF(FPDF):
         self.ln(5)
 
 def render(payload):
-    title = payload.get("title", "Untitled")
-    sections = payload.get("sections", [])
+    songs = payload.get("songs")
+    if songs is None:
+        # Single song mode
+        songs = [payload]
     
-    pdf = CifraPDF(title)
-    pdf.add_page()
+    pdf = None
     
-    for section in sections:
-        if section.get("type") == "label":
-            label = section.get("label", "").strip()
-            if label:
-                pdf.set_font("RobotoMono", "B", 10)
-                pdf.cell(0, 8, label, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-            continue
-
-        for line in section.get("lines", []):
-            chords = line.get("chord_line", "").rstrip()
-            lyrics = line.get("lyric_line", "").rstrip()
-            
-            if chords:
-                pdf.set_font("RobotoMono", "B", 12)
-                pdf.cell(0, 6, chords, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-            
-            if lyrics:
-                pdf.set_font("RobotoMono", "", 12)
-                pdf.cell(0, 6, lyrics, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-            elif not chords:
-                # Blank line
-                pdf.ln(6)
+    for song in songs:
+        title = song.get("title", "Untitled")
+        sections = song.get("sections", [])
         
-        pdf.ln(5) # Space between sections
+        if pdf is None:
+            pdf = CifraPDF(title)
+        
+        pdf.cifra_title = title # Update title for header BEFORE adding page
+        pdf.add_page()
+        
+        for section in sections:
+            if section.get("type") == "label":
+                label = section.get("label", "").strip()
+                if label:
+                    pdf.set_font("RobotoMono", "B", 10)
+                    pdf.cell(0, 8, label, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+                continue
 
-    return pdf.output()
+            for line in section.get("lines", []):
+                chords = line.get("chord_line", "").rstrip()
+                lyrics = line.get("lyric_line", "").rstrip()
+                
+                if chords:
+                    pdf.set_font("RobotoMono", "B", 12)
+                    pdf.cell(0, 6, chords, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+                
+                if lyrics:
+                    pdf.set_font("RobotoMono", "", 12)
+                    pdf.cell(0, 6, lyrics, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+                elif not chords:
+                    # Blank line
+                    pdf.ln(6)
+            
+            pdf.ln(5) # Space between sections
+
+    return pdf.output() if pdf else b""
 
 def main():
     try:

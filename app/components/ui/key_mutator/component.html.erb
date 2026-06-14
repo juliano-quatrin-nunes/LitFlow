@@ -1,6 +1,6 @@
 <div class="inline-flex items-center bg-secondary/12 border border-border rounded-lg p-0.5" data-controller="key-mutator">
   <% lower_key = Repertoire::TranspositionService.transpose_key(@current_key, -1) %>
-  <%= helpers.ui.btn url: helpers.repertoire_music_by_author_show_path(@music.author, @music, key: lower_key), 
+  <%= helpers.ui.btn url: helpers.repertoire_music_by_author_show_path(@music.author, @music, key: lower_key, setlist_id: @setlist_id), 
             variant: :ghost, 
             size: :icon_xs, 
             class: "!w-7 !h-7 hover:bg-background/50 transition-colors",
@@ -22,7 +22,7 @@
       <span class="flex-1 text-center font-bold"><%= @current_key %></span>
 
       <% unless is_original? %> <%# herb:disable actionview-no-silent-helper %>
-        <%= link_to helpers.repertoire_music_by_author_show_path(@music.author, @music, key: @music.original_key), 
+        <%= link_to helpers.repertoire_music_by_author_show_path(@music.author, @music, key: @music.original_key, setlist_id: @setlist_id), 
                   data: { 
                     turbo_frame: @turbo_frame,
                     turbo_action: "advance",
@@ -42,7 +42,7 @@
           is_orig = (@music.original_key == display_key)
         %>
         <li class="list-none contents">
-          <%= link_to display_key, helpers.repertoire_music_by_author_show_path(@music.author, @music, key: display_key), 
+          <%= link_to display_key, helpers.repertoire_music_by_author_show_path(@music.author, @music, key: display_key, setlist_id: @setlist_id), 
                       data: { 
                         turbo_frame: @turbo_frame,
                         turbo_action: "advance"
@@ -58,7 +58,7 @@
   <% end %>
 
   <% higher_key = Repertoire::TranspositionService.transpose_key(@current_key, 1) %>
-  <%= helpers.ui.btn url: helpers.repertoire_music_by_author_show_path(@music.author, @music, key: higher_key), 
+  <%= helpers.ui.btn url: helpers.repertoire_music_by_author_show_path(@music.author, @music, key: higher_key, setlist_id: @setlist_id), 
             variant: :ghost, 
             size: :icon_xs, 
             class: "!w-7 !h-7 hover:bg-background/50 transition-colors",

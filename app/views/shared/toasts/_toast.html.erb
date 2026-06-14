@@ -15,6 +15,7 @@
   <% if download_url.present? %>
     <a href="<%= download_url %>"
        download="<%= filename %>"
+       data-turbo="false"
        data-controller="auto-download"
        class="mt-2 inline-flex items-center justify-center rounded-md bg-accent px-3 py-1 text-xs font-medium text-accent-foreground hover:bg-accent/90 transition-colors"
        aria-hidden="false">

@@ -11,7 +11,7 @@ class Repertoire::Musics::CifraDocxController < ApplicationController
         if @music.cifra_fingerprint == expected_fingerprint && @music.cifra_docx.attached?
           # Cache hit: Broadcast the ready toast which triggers the download
           docx_url = helpers.rails_blob_path(@music.cifra_docx, disposition: "attachment", only_path: true)
-          filename = "#{@music.slug}.docx"
+          filename = "#{@music.title.parameterize}.docx"
 
           render turbo_stream: turbo_stream.append("toasts", partial: "shared/toasts/toast", locals: {
             title: "Pronto!",

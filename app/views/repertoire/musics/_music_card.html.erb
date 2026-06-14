@@ -1,4 +1,4 @@
-<%= link_to repertoire_music_by_author_show_path(music.author, music, key: local_assigns[:preferred_key]), class: "block group h-full", data: { turbo_frame: "_top" } do %>
+<%= link_to repertoire_music_by_author_show_path(music.author, music, key: local_assigns[:preferred_key], setlist_id: local_assigns[:setlist_id]), class: "block group h-full", data: { turbo_frame: "_top" } do %>
   <%= ui.card class: "hover:border-secondary/40 transition-all shadow-sm group-hover:shadow-md h-full flex flex-col" do %>
     <%= render partial: "repertoire/musics/music_card_body", locals: {
       music: music,

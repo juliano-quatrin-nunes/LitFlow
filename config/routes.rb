@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   get "p/setlists/:uid", to: "setlists#public_show", as: :public_setlist
   resources :setlists do
     get "pptx", to: "setlists/pptx#show", as: :pptx
+    get "cifra_pdf", to: "setlists/cifra_pdf#show", as: :cifra_pdf
+    get "cifra_docx", to: "setlists/cifra_docx#show", as: :cifra_docx
   end
   resources :setlist_items, only: [ :new, :create, :edit, :update, :destroy ] do
     collection do

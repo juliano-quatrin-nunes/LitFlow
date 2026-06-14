@@ -14,7 +14,13 @@ module Repertoire
 
     def show
       @saved_music = Current.user&.saved_musics&.find_by(music: @music)
-      @current_key = params[:key] || @saved_music&.preferred_key || @music.original_key
+      
+      if params[:setlist_id].present? && authenticated?
+        @context_setlist = Current.user.setlists.find_by(id: params[:setlist_id])
+        @context_setlist_item = @context_setlist&.items&.find_by(item: @music)
+      end
+
+      @current_key = params[:key] || @context_setlist_item&.key || @saved_music&.preferred_key || @music.original_key
       @content_json = if @current_key != @music.original_key
         Repertoire::TranspositionService.call(@music.content_json, @music.original_key, @current_key)
       else

@@ -1,0 +1,13 @@
+one:
+  setlist: one
+  item: one (Repertoire::Music)
+  mass_part: one
+  key: "G"
+  position: 1
+
+two:
+  setlist: one
+  item: two (Repertoire::Music)
+  mass_part: two
+  key: "C"
+  position: 2

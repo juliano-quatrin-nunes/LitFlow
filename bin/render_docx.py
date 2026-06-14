@@ -31,8 +31,10 @@ from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 def render(payload):
-    title = payload.get("title", "Untitled")
-    sections = payload.get("sections", [])
+    songs = payload.get("songs")
+    if songs is None:
+        # Single song mode
+        songs = [payload]
     
     doc = Document()
     
@@ -43,51 +45,58 @@ def render(payload):
         section.left_margin = Inches(0.1)
         section.right_margin = Inches(0.1)
     
-    # Title - Bold, Left Aligned
-    p = doc.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    run = p.add_run(title)
-    run.bold = True
-    run.font.name = "Roboto Mono"
-    run.font.size = Pt(14)
-    
-    doc.add_paragraph() # Spacer
-    
-    for section in sections:
-        if section.get("type") == "label":
-            label = section.get("label", "").strip()
-            if label:
-                p = doc.add_paragraph()
-                p.paragraph_format.space_after = Pt(0)
-                run = p.add_run(label)
-                run.bold = True
-                run.font.name = "Roboto Mono"
-                run.font.size = Pt(10)
-            continue
-
-        for line in section.get("lines", []):
-            chords = line.get("chord_line", "").rstrip()
-            lyrics = line.get("lyric_line", "").rstrip()
+    for i, song in enumerate(songs):
+        if i > 0:
+            doc.add_page_break()
             
-            if chords:
-                p = doc.add_paragraph()
-                p.paragraph_format.space_after = Pt(0)
-                run = p.add_run(chords)
-                run.bold = True
-                run.font.name = "Roboto Mono"
-                run.font.size = Pt(12)
-            
-            if lyrics:
-                p = doc.add_paragraph()
-                p.paragraph_format.space_after = Pt(0)
-                run = p.add_run(lyrics)
-                run.font.name = "Roboto Mono"
-                run.font.size = Pt(12)
-            elif not chords:
-                # Blank line
-                doc.add_paragraph()
+        title = song.get("title", "Untitled")
+        sections = song.get("sections", [])
         
-        doc.add_paragraph() # Space between sections
+        # Title - Bold, Left Aligned
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        run = p.add_run(title)
+        run.bold = True
+        run.font.name = "Roboto Mono"
+        run.font.size = Pt(14)
+        
+        doc.add_paragraph() # Spacer
+        
+        for section in sections:
+            if section.get("type") == "label":
+                label = section.get("label", "").strip()
+                if label:
+                    p = doc.add_paragraph()
+                    p.paragraph_format.space_after = Pt(0)
+                    run = p.add_run(label)
+                    run.bold = True
+                    run.font.name = "Roboto Mono"
+                    run.font.size = Pt(10)
+                continue
+
+            for line in section.get("lines", []):
+                chords = line.get("chord_line", "").rstrip()
+                lyrics = line.get("lyric_line", "").rstrip()
+                
+                if chords:
+                    p = doc.add_paragraph()
+                    p.paragraph_format.space_after = Pt(0)
+                    run = p.add_run(chords)
+                    run.bold = True
+                    run.font.name = "Roboto Mono"
+                    run.font.size = Pt(12)
+                
+                if lyrics:
+                    p = doc.add_paragraph()
+                    p.paragraph_format.space_after = Pt(0)
+                    run = p.add_run(lyrics)
+                    run.font.name = "Roboto Mono"
+                    run.font.size = Pt(12)
+                elif not chords:
+                    # Blank line
+                    doc.add_paragraph()
+            
+            doc.add_paragraph() # Space between sections
 
     buffer = io.BytesIO()
     doc.save(buffer)
