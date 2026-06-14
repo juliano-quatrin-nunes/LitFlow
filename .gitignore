@@ -43,3 +43,6 @@
 
 # Local Kamal registry token (never commit).
 /.kamal/registry_token
+
+# Local Postgres password for the Kamal db accessory (never commit).
+/.kamal/db_password
