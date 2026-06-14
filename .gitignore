@@ -40,3 +40,6 @@
 # macOS Finder metadata.
 .DS_Store
 **/.DS_Store
+
+# Local Kamal registry token (never commit).
+/.kamal/registry_token
