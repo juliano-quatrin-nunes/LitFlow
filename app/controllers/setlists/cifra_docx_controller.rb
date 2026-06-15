@@ -1,4 +1,5 @@
 class Setlists::CifraDocxController < ApplicationController
+  allow_unauthenticated_access only: :show
   before_action :set_setlist
 
   def show
@@ -39,6 +40,13 @@ class Setlists::CifraDocxController < ApplicationController
   private
 
   def set_setlist
-    @setlist = Setlist.find(params[:setlist_id])
+    @setlist =
+      if params[:uid].present?
+        Setlist.find_by!(uid: params[:uid])
+      elsif authenticated?
+        Current.user.setlists.find(params[:setlist_id])
+      else
+        raise ActiveRecord::RecordNotFound
+      end
   end
 end

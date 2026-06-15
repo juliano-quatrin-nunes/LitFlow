@@ -11,6 +11,9 @@ Rails.application.routes.draw do
 
   resources :saved_musics, only: [ :index, :create, :update, :destroy ]
   get "p/setlists/:uid", to: "setlists#public_show", as: :public_setlist
+  get "p/setlists/:uid/cifra_pdf", to: "setlists/cifra_pdf#show", as: :public_setlist_cifra_pdf
+  get "p/setlists/:uid/cifra_docx", to: "setlists/cifra_docx#show", as: :public_setlist_cifra_docx
+  get "p/setlists/:uid/pptx", to: "setlists/pptx#show", as: :public_setlist_pptx
   resources :setlists do
     get "pptx", to: "setlists/pptx#show", as: :pptx
     get "cifra_pdf", to: "setlists/cifra_pdf#show", as: :cifra_pdf
