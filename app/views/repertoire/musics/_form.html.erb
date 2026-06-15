@@ -19,8 +19,9 @@
   <%= form.choices :author_id, 
         (music.author ? [[music.author.name, music.author.id]] : []), 
         { label: "Autor (opcional)", include_blank: "Sem autor" },
-        { 
-          data: { 
+        {
+          required: false,
+          data: {
             search: repertoire_authors_path(format: :json),
             new: repertoire_authors_path
           } 
