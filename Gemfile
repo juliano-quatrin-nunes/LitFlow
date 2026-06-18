@@ -74,5 +74,5 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "tailwind_merge", "~> 1.4"
+gem "tailwind_merge", "~> 1.5"
 gem "data_migrate"
